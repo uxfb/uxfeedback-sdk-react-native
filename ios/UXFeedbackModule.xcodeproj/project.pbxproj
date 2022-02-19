@@ -3,11 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BEF9DBB027BD9F870068832E /* UXFeedbackSDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEF9DBAF27BD9F870068832E /* UXFeedbackSDK.xcframework */; };
 		FA4F9FE82512AA42002DB4D5 /* UXFeedbackModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4F9FE72512AA42002DB4D5 /* UXFeedbackModule.swift */; };
 		FA4F9FEB2512ACC2002DB4D5 /* UXFeedbackModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4F9FEA2512ACC2002DB4D5 /* UXFeedbackModule.m */; };
 /* End PBXBuildFile section */
@@ -25,7 +24,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		BEF9DBAF27BD9F870068832E /* UXFeedbackSDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = UXFeedbackSDK.xcframework; sourceTree = "<group>"; };
 		FA0EFF60236CC8FB00069FA8 /* libUXFeedbackModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libUXFeedbackModule.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4F9FE62512AA41002DB4D5 /* UXFeedbackModule-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UXFeedbackModule-Bridging-Header.h"; sourceTree = "<group>"; };
 		FA4F9FE72512AA42002DB4D5 /* UXFeedbackModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UXFeedbackModule.swift; sourceTree = "<group>"; };
@@ -37,7 +35,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BEF9DBB027BD9F870068832E /* UXFeedbackSDK.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,7 +44,6 @@
 		BEF9DB5027BD8AF10068832E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BEF9DBAF27BD9F870068832E /* UXFeedbackSDK.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
