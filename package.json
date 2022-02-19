@@ -1,5 +1,5 @@
 {
-  "name": "ux-feedback",
+  "name": "react-native-ux-feedback",
   "version": "0.0.2",
   "description": "UX Feedback library for react native",
   "homepage": "https://github.com/uxfb/uxfeedback-sdk-react-native",
@@ -8,10 +8,10 @@
   "author": "UXFeedback <info@uxfeedback.ru>",
   "license": "MIT",
   "files": [
-    "/android",
-    "/ios",
-    "/lib",
-    "/ux-feedback.podspec"
+    "android",
+    "ios",
+    "lib",
+    "ux-feedback.podspec"
   ],
   "scripts": {
     "compile": "rm -rf lib && tsc -p .",
