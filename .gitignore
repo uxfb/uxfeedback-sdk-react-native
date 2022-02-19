@@ -26,13 +26,12 @@ DerivedData
 build/
 .idea
 .gradle
-.bundle/
 local.properties
 *.iml
 *.hprof
 android/gradlew
 android/gradlew.bat
-android/gradle/
+android/gradle
 
 # node.js
 #
