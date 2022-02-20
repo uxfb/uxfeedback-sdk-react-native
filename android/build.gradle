@@ -6,7 +6,6 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://mymavenrepo.com/repo/u4asKGGjymjlKwPIWU0v/" }
     }
 
     dependencies {
