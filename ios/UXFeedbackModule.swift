@@ -51,8 +51,43 @@ class UXFeedbackModule: NSObject {
     }
   }
 
+  @objc(startCampagin:)
+  func startCampagin(eventName: String) {
+    UXFeedback.sharedSDK.delegate = self
+    UXFeedback.sharedSDK.sendEvent(event: eventName, fromController: RCTPresentedViewController()!)
+  }
+
+  @objc(stopCampagin:)
+  func stopCampagin() {
+    UXFeedback.sharedSDK.stopCampagin()
+  }
+
+  @objc(setProperties:)
+  func setProperties(properties: Dictionary<String, Any>) {
+    UXFeedback.sharedSDK.setProperties(properties)
+  }
+
   @objc
   static func requiresMainQueueSetup() -> Bool {
     return true
   }
 }
+
+extension UXFeedbackModule: UXFeedbackCampaignDelegate{
+    func campaignDidLoad(success: Bool){
+      
+    }
+    
+    func campaignDidShow(eventName: String) {
+      
+    }
+    
+    func campaignDidReceiveError(errorString: String){
+      
+    }
+    
+    func campaignDidClose(eventName: String) {
+      
+    }
+}
+

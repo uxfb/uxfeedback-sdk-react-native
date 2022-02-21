@@ -1,6 +1,7 @@
 package com.raserad.uxfeedback
 
 import com.facebook.react.bridge.*
+import ru.uxfeedback.pub.sdk.UXFbProperties
 import ru.uxfeedback.pub.sdk.UXFbSettings
 import ru.uxfeedback.pub.sdk.UXFeedback
 import java.lang.Exception
@@ -11,12 +12,10 @@ class UXFeedbackModule(reactContext: ReactApplicationContext) : ReactContextBase
 
     @ReactMethod
     fun setup(config: ReadableMap, promise: Promise) {
-        val appID = config.getMap("appID")
-        if (appID === null) {
-            return
-        }
-        val androidAppID = appID.getString("android")
-        if (androidAppID === null) {
+        val appID = config.getMap("appID") ?: return
+        val androidAppID = try {
+            appID.getString("android")!!
+        } catch (e: Exception) {
             return
         }
         UXFeedback.init(currentActivity!!.application, androidAppID)
@@ -62,6 +61,25 @@ class UXFeedbackModule(reactContext: ReactApplicationContext) : ReactContextBase
             this.reconnectTimeout = reconnectTimeout
             this.slideInUiBocked = uiBlocked
             this.debugEnabled = debugEnabled
+        })
+    }
+
+    @ReactMethod
+    fun startCampagin(eventName: String) {
+        UXFeedback.getInstance()?.startCampaign(eventName)
+    }
+
+    @ReactMethod
+    fun stopCampagin() {
+        UXFeedback.getInstance()?.stopCampaign()
+    }
+
+    @ReactMethod
+    fun setProperties(properties: ReadableMap) {
+        UXFeedback.getInstance()?.setProperties(UXFbProperties.getEmpty().apply {
+            properties.entryIterator.forEach { 
+                this.add(it.key, it.value.toString())
+            }
         })
     }
 
