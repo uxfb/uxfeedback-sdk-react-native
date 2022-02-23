@@ -15,9 +15,9 @@ RCT_EXTERN_METHOD(setup:(NSDictionary)config
 
 RCT_EXTERN_METHOD(setSettings:(NSDictionary)settings)
 
-RCT_EXTERN_METHOD(startCampagin:(NSString)eventName)
+RCT_EXTERN_METHOD(startCampaign:(NSString)eventName)
 
-RCT_EXTERN_METHOD(stopCampagin)
+RCT_EXTERN_METHOD(stopCampaign)
 
 RCT_EXTERN_METHOD(setProperties:(NSDictionary)properties)
 @end

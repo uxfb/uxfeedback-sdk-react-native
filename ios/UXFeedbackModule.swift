@@ -51,15 +51,15 @@ class UXFeedbackModule: NSObject {
     }
   }
 
-  @objc(startCampagin:)
-  func startCampagin(eventName: String) {
+  @objc(startCampaign:)
+  func startCampaign(eventName: String) {
     UXFeedback.sharedSDK.delegate = self
     UXFeedback.sharedSDK.sendEvent(event: eventName, fromController: RCTPresentedViewController()!)
   }
 
-  @objc(stopCampagin:)
-  func stopCampagin() {
-    UXFeedback.sharedSDK.stopCampagin()
+  @objc(stopCampaign)
+  func stopCampaign() {
+    UXFeedback.sharedSDK.stopCampaign()
   }
 
   @objc(setProperties:)

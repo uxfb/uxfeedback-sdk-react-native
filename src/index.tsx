@@ -21,8 +21,8 @@ interface UXFeedbackConfig {
 type UXFeedback = {
   setup(config: UXFeedbackConfig): Promise<String>;
   setSettings(settings: UXFeedbackSettings): void;
-  startCampagin(eventName: string): Promise<boolean>;
-  stopCampagin(): void;
+  startCampaign(eventName: string): Promise<boolean>;
+  stopCampaign(): void;
   setProperties(properties: Map<string, any>): void;
 }
 
@@ -31,7 +31,7 @@ const { UXFeedbackModule } = NativeModules;
 export const {
   setup,
   setSettings,
-  startCampagin,
-  stopCampagin,
+  startCampaign,
+  stopCampaign,
   setProperties
 } = UXFeedbackModule as UXFeedback;

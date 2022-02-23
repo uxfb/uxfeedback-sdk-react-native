@@ -65,12 +65,12 @@ class UXFeedbackModule(reactContext: ReactApplicationContext) : ReactContextBase
     }
 
     @ReactMethod
-    fun startCampagin(eventName: String) {
+    fun startCampaign(eventName: String) {
         UXFeedback.getInstance()?.startCampaign(eventName)
     }
 
     @ReactMethod
-    fun stopCampagin() {
+    fun stopCampaign() {
         UXFeedback.getInstance()?.stopCampaign()
     }
 
