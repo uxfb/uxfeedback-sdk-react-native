@@ -1,12 +1,13 @@
 package com.raserad.uxfeedback
 
 import com.facebook.react.bridge.*
+import ru.uxfeedback.pub.sdk.UXFbOnStateCampaignListener
 import ru.uxfeedback.pub.sdk.UXFbProperties
 import ru.uxfeedback.pub.sdk.UXFbSettings
 import ru.uxfeedback.pub.sdk.UXFeedback
 import java.lang.Exception
 
-class UXFeedbackModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+class UXFeedbackModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), UXFbOnStateCampaignListener {
 
     override fun getName() = "UXFeedbackModule"
 
@@ -23,13 +24,11 @@ class UXFeedbackModule(reactContext: ReactApplicationContext) : ReactContextBase
         if (settings !== null) {
             setSettings(settings)
         }
-        promise.resolve("success")
     }
 
     @ReactMethod
     fun setSettings(settings: ReadableMap) {
         val uxFeedbackSettings = UXFbSettings.getDefault()
-        println("Current UX Feedback Settings $settings")
         val globalDelayTimer = try {
             settings.getDouble("globalDelayTimer").toInt()
         } catch (e: Exception) {
@@ -66,6 +65,7 @@ class UXFeedbackModule(reactContext: ReactApplicationContext) : ReactContextBase
 
     @ReactMethod
     fun startCampaign(eventName: String) {
+        UXFeedback.getInstance()?.setCampaignEventsListener(this)
         UXFeedback.getInstance()?.startCampaign(eventName)
     }
 
@@ -85,5 +85,13 @@ class UXFeedbackModule(reactContext: ReactApplicationContext) : ReactContextBase
 
     override fun getConstants(): MutableMap<String, Any> {
         return hashMapOf("count" to 1)
+    }
+
+    override fun uxFbOnStartCampaign(eventName: String) {
+
+    }
+
+    override fun uxFbOnStopCampaign(eventName: String) {
+
     }
 }
