@@ -1,4 +1,10 @@
-import { NativeModules } from 'react-native'
+import { NativeEventEmitter, NativeModules } from 'react-native'
+
+interface UXFeedbackColor {
+  color?: string;
+  opacity?: number;
+  blur?: number;
+}
 
 interface UXFeedbackSettings {
   globalDelayTimer?: number | undefined;
@@ -8,18 +14,11 @@ interface UXFeedbackSettings {
   reconnectCount?: number | undefined;
   socketTimeout?: number | undefined;
   debugEnabled?: boolean | undefined;
-}
-
-interface UXFeedbackConfig {
-  appID?: {
-    ios?: string | undefined;
-    android?: string | undefined;
-  } | undefined,
-  settings?: UXFeedbackSettings | undefined;
+  slideInBlackout?: UXFeedbackColor;
+  fullscreenBlackout?: UXFeedbackColor;
 }
 
 type UXFeedback = {
-  setup(config: UXFeedbackConfig): Promise<String>;
   setSettings(settings: UXFeedbackSettings): void;
   startCampaign(eventName: string): Promise<boolean>;
   stopCampaign(): void;
@@ -28,8 +27,27 @@ type UXFeedback = {
 
 const { UXFeedbackModule } = NativeModules;
 
+const eventEmiter = new NativeEventEmitter(UXFeedbackModule);
+
+export function onCampaignStart(callback: (_: string) => void): Function {
+  const subscription = eventEmiter.addListener('campaign_start', (data: string) => {
+    callback(data)
+  })
+  return () => {
+    eventEmiter.removeSubscription(subscription)
+  }
+}
+
+export function onCampaignStop(callback: (_: string) => void): Function {
+  const subscription = eventEmiter.addListener('campaign_start', (data: string) => {
+    callback(data)
+  })
+  return () => {
+    eventEmiter.removeSubscription(subscription)
+  }
+}
+
 export const {
-  setup,
   setSettings,
   startCampaign,
   stopCampaign,

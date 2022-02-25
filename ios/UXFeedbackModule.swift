@@ -2,31 +2,10 @@ import Foundation
 import UXFeedbackSDK
 
 @objc(UXFeedbackModule)
-class UXFeedbackModule: NSObject {
+class UXFeedbackModule: RCTEventEmitter {
   @objc
-  func constantsToExport() -> [AnyHashable : Any]! {
+  override func constantsToExport() -> [AnyHashable : Any]! {
     return ["count": "Rasul's native module"]
-  }
-
-  @objc(setup:withResolver:withRejecter:)
-  func setup(config: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    let appID = config["appID"] as? Dictionary<String, String>
-    if (appID == nil) {
-      return
-    }
-    let iosAppID = appID!["ios"]
-    if (iosAppID == nil) {
-      return
-    }
-    DispatchQueue.main.async {
-        UXFeedback.sharedSDK.setup(appID: iosAppID!, window: UIApplication.shared.windows.first!) { [weak self] success in
-          let settings = config["settings"] as? Dictionary<String, Any>
-          if (settings != nil) {
-            self?.setSettings(settings: settings!)
-          }
-          resolve(String(success))
-        }
-    }
   }
 
   @objc(setSettings:)
@@ -38,7 +17,6 @@ class UXFeedbackModule: NSObject {
     }
     let uiBlocked = settings["uiBlocked"] as? Bool
     if (uiBlocked != nil) {
-        print("UX Feedback blocked", uiBlocked)
         UXFeedback.sharedSDK.uiBlocked = uiBlocked!
     }
     let closeOnSwipe = settings["closeOnSwipe"] as? Bool
@@ -54,7 +32,10 @@ class UXFeedbackModule: NSObject {
   @objc(startCampaign:)
   func startCampaign(eventName: String) {
     UXFeedback.sharedSDK.delegate = self
-    UXFeedback.sharedSDK.sendEvent(event: eventName, fromController: RCTPresentedViewController()!)
+    DispatchQueue.main.async {
+        UXFeedback.sharedSDK.sendEvent(event: eventName, fromController: RCTPresentedViewController()!)
+    }
+    print("Campaign started", eventName)
   }
 
   @objc(stopCampaign)
@@ -68,26 +49,32 @@ class UXFeedbackModule: NSObject {
   }
 
   @objc
-  static func requiresMainQueueSetup() -> Bool {
+  override static func requiresMainQueueSetup() -> Bool {
     return true
+  }
+    
+  @objc
+  override func supportedEvents() -> [String]! {
+      return ["campaign_start", "campaign_stop"]
+  }
+    
+  @objc
+  static func setup(appID: String) {
+      UXFeedback.sharedSDK.setup(appID: appID)
   }
 }
 
-extension UXFeedbackModule: UXFeedbackCampaignDelegate{
-    func campaignDidLoad(success: Bool){
-      
-    }
+extension UXFeedbackModule: UXFeedbackCampaignDelegate {
+    func campaignDidLoad(success: Bool) {}
+    
+    func campaignDidReceiveError(errorString: String) {}
     
     func campaignDidShow(eventName: String) {
-      
-    }
-    
-    func campaignDidReceiveError(errorString: String){
-      
+        sendEvent(withName: "campaign_start", body: eventName)
     }
     
     func campaignDidClose(eventName: String) {
-      
+        sendEvent(withName: "campaign_stop", body: eventName)
     }
 }
 

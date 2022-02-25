@@ -1,13 +1,7 @@
-//
-//  UXFeedbackModule.m
-//  UXFeedbackModule
-//
-//  Copyright © 2022 Raserad. All rights reserved.
-//
-
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
-@interface RCT_EXTERN_MODULE(UXFeedbackModule, NSObject)
+@interface RCT_EXTERN_MODULE(UXFeedbackModule, RCTEventEmitter)
 
 RCT_EXTERN_METHOD(setup:(NSDictionary)config
                  withResolver:(RCTPromiseResolveBlock)resolve
