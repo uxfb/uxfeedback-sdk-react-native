@@ -25,7 +25,7 @@ FullScreen - форма появляется по центру экрана
 
 ## Установка
 
-Установка React Native UX Feedback требует несколько шагов: установить NPM модуль, настройка бибилиотеки для каждой платформы и пересобрать ваше приложение.
+Установка React Native UX Feedback требует несколько шагов: установить NPM модуль, настройка библиотеки для каждой платформы и пересобрать ваше приложение.
 
 ### 1. Установка через NPM
 
@@ -68,7 +68,7 @@ import ru.uxfeedback.pub.sdk.UXFbSettings;
 import ru.uxfeedback.pub.sdk.UXFeedback;
 ```
 
-Затем проинициализируйте бибилиотеку в onCreate:
+Затем проинициализируйте библиотеку в onCreate:
 ```java
 @Override
     public void onCreate() {
@@ -109,7 +109,7 @@ Once successfully linked and rebuilt, your application will be connected to Fire
 
 ### 4. Конфигурирование библиотеки
 
-Для того чтобы задавать нужные параметры работы бибилиотеки используйте метод `setSettings` импортируемый из react-native-ux-feedback:
+Для того чтобы задавать нужные параметры работы библиотеки используйте метод `setSettings` импортируемый из react-native-ux-feedback:
 
 ```javascript
 import { setSettings } from 'react-native-ux-feedback'
@@ -133,7 +133,7 @@ setSettings({
         blur: 25, //Размытие от 0 до 25
     },
   },
-  ios: { //Настройки бибилиотеки для ios 
+  ios: { //Настройки библиотеки для ios 
     closeOnSwipe: true, // включение полного закрытия slide-in формы одним смахиванием вниз
     slideInBlackout:  { //Затемнение фона для форм Slide-in.
         color: "#ffffff", //Цвет в формате hex
@@ -215,7 +215,7 @@ setParameters({
 ```
 ### 9. Режим логгирования (Отладка приложения)
 
-Для того чтобы включить режим логгирования вам нужно указать в настройке бибилиотеки debugEnabled: true
+Для того чтобы включить режим логгирования вам нужно указать в настройке библиотеки debugEnabled: true
 
 ```javascript
 import { setSettings } from 'react-native-ux-feedback'
