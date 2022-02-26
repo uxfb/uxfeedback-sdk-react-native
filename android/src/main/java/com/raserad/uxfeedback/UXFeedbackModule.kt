@@ -14,73 +14,75 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
 
     @ReactMethod
     fun setSettings(settings: ReadableMap) {
-        val feedbackSettings = UXFbSettings.getDefault().apply {
-            startGlobalDelayTimer = try {
-                settings.getDouble("globalDelayTimer").toInt()
-            } catch (e: Exception) {
-                startGlobalDelayTimer
-            }
-            slideInUiBocked = try {
-                settings.getBoolean("uiBlocked")
-            } catch (e: Exception) {
-                slideInUiBocked
-            }
-            debugEnabled = try {
-                settings.getBoolean("debugEnabled")
-            } catch (e: Exception) {
-                debugEnabled
-            }
-            val androidSettings = settings.getMap("android")
-            if (androidSettings != null) {
-                reconnectCount = try {
-                    androidSettings.getDouble("reconnectCount").toInt()
+        reactContext.runOnUiQueueThread {
+            val feedbackSettings = UXFbSettings.getDefault().apply {
+                startGlobalDelayTimer = try {
+                    settings.getDouble("globalDelayTimer").toInt()
                 } catch (e: Exception) {
-                    reconnectCount
+                    startGlobalDelayTimer
                 }
-                reconnectTimeout = try {
-                    androidSettings.getDouble("reconnectTimeout").toInt()
+                slideInUiBocked = try {
+                    settings.getBoolean("uiBlocked")
                 } catch (e: Exception) {
-                    reconnectTimeout
+                    slideInUiBocked
                 }
-                val slideInBlackout = androidSettings.getMap("slideInBlackout")
-                if (slideInBlackout != null) {
-                    slideInUiBlackoutColor = try {
-                        slideInBlackout.getDouble("color").toInt()
-                    } catch (e: Exception) {
-                        slideInUiBlackoutColor
-                    }
-                    slideInUiBlackoutOpacity = try {
-                        slideInBlackout.getDouble("opacity").toInt()
-                    } catch (e: Exception) {
-                        slideInUiBlackoutBlur
-                    }
-                    slideInUiBlackoutBlur = try {
-                        slideInBlackout.getDouble("blur").toInt()
-                    } catch (e: Exception) {
-                        slideInUiBlackoutBlur
-                    }
+                debugEnabled = try {
+                    settings.getBoolean("debugEnabled")
+                } catch (e: Exception) {
+                    debugEnabled
                 }
-                val popupBlackout = androidSettings.getMap("popupBlackout")
-                if (popupBlackout != null) {
-                    popupUiBlackoutColor = try {
-                        popupBlackout.getDouble("color").toInt()
+                val androidSettings = settings.getMap("android")
+                if (androidSettings != null) {
+                    reconnectCount = try {
+                        androidSettings.getDouble("reconnectCount").toInt()
                     } catch (e: Exception) {
-                        popupUiBlackoutColor
+                        reconnectCount
                     }
-                    popupUiBlackoutOpacity = try {
-                        popupBlackout.getDouble("opacity").toInt()
+                    reconnectTimeout = try {
+                        androidSettings.getDouble("reconnectTimeout").toInt()
                     } catch (e: Exception) {
-                        popupUiBlackoutOpacity
+                        reconnectTimeout
                     }
-                    popupUiBlackoutBlur = try {
-                        popupBlackout.getDouble("blur").toInt()
-                    } catch (e: Exception) {
-                        popupUiBlackoutBlur
+                    val slideInBlackout = androidSettings.getMap("slideInBlackout")
+                    if (slideInBlackout != null) {
+                        slideInUiBlackoutColor = try {
+                            slideInBlackout.getDouble("color").toInt()
+                        } catch (e: Exception) {
+                            slideInUiBlackoutColor
+                        }
+                        slideInUiBlackoutOpacity = try {
+                            slideInBlackout.getDouble("opacity").toInt()
+                        } catch (e: Exception) {
+                            slideInUiBlackoutBlur
+                        }
+                        slideInUiBlackoutBlur = try {
+                            slideInBlackout.getDouble("blur").toInt()
+                        } catch (e: Exception) {
+                            slideInUiBlackoutBlur
+                        }
+                    }
+                    val popupBlackout = androidSettings.getMap("popupBlackout")
+                    if (popupBlackout != null) {
+                        popupUiBlackoutColor = try {
+                            popupBlackout.getDouble("color").toInt()
+                        } catch (e: Exception) {
+                            popupUiBlackoutColor
+                        }
+                        popupUiBlackoutOpacity = try {
+                            popupBlackout.getDouble("opacity").toInt()
+                        } catch (e: Exception) {
+                            popupUiBlackoutOpacity
+                        }
+                        popupUiBlackoutBlur = try {
+                            popupBlackout.getDouble("blur").toInt()
+                        } catch (e: Exception) {
+                            popupUiBlackoutBlur
+                        }
                     }
                 }
             }
+            UXFeedback.getInstance()?.setSettings(feedbackSettings)
         }
-        UXFeedback.getInstance()?.setSettings(feedbackSettings)
     }
 
     @ReactMethod
@@ -117,7 +119,9 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
     }
 
     private fun emitEvent(event: String, data: Any) {
-        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java).emit(event, data)
+        reactContext.runOnUiQueueThread {
+            reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java).emit(event, data)
+        }
     }
 
     override fun uxFbOnStartCampaign(eventName: String) {
