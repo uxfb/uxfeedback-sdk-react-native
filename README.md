@@ -105,8 +105,6 @@ return YES;
 }
 ```
 
-Once successfully linked and rebuilt, your application will be connected to Firebase using the `@react-native-firebase/app` module. This module does not provide much functionality, therefore to use other Firebase services, each of the modules for the individual Firebase services need installing separately.
-
 ### 4. Конфигурирование библиотеки
 
 Для того чтобы задавать нужные параметры работы библиотеки используйте метод `setSettings` импортируемый из react-native-ux-feedback:
