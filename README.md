@@ -105,6 +105,8 @@ return YES;
 }
 ```
 
+Once successfully linked and rebuilt, your application will be connected to Firebase using the `@react-native-firebase/app` module. This module does not provide much functionality, therefore to use other Firebase services, each of the modules for the individual Firebase services need installing separately.
+
 ### 4. Конфигурирование библиотеки
 
 Для того чтобы задавать нужные параметры работы бибилиотеки используйте метод `setSettings` импортируемый из react-native-ux-feedback:
@@ -187,7 +189,21 @@ stopCampaign()
 ```
 Если кампания не была показана - ее показ отменится, если была показана - будет закрыта.
 
-### 7. Отправление параметров (Properties)
+### 7. Отслеживание событий
+При необходимости есть возможность отслеживать события как показ кампании пользователю или когда кампания пройдена/скрыта:
+```javascript
+import { onCampaignStart, onCampaignStop } from 'react-native-ux-feedback'
+//unsubscribeOnStart - функция которую можно вызвать для отписки от события
+const unsubscribeOnStart = onCampaignStart((eventName) => {
+    console.log(`Кампания с событием ${eventName} показана`)
+})
+//unsubscribeOnStop - функция которую можно вызвать для отписки от события
+const unsubscribeOnStop = onCampaignStop((eventName) => {
+    console.log(`Кампания с событием ${eventName} скрыта`)
+})
+```
+
+### 8. Отправление параметров (Properties)
 При необходимости есть возможность отправить дополнительные данные, вместе с ответом, например User_id, Email, Регион или любые другие. Для этого вызовите функцию setParameters:
 ```javascript
 import { setParameters } from 'react-native-ux-feedback'
@@ -197,7 +213,7 @@ setParameters({
     //....
 })
 ```
-### 8. Режим логгирования (Отладка приложения)
+### 9. Режим логгирования (Отладка приложения)
 
 Для того чтобы включить режим логгирования вам нужно указать в настройке бибилиотеки debugEnabled: true
 
@@ -218,7 +234,7 @@ npx react-native log-android
 
 Более подробную информацию можно получить [здесь](https://reactnative.dev/docs/debugging)
 
-### 9. Использование с expo:
+### 10. Использование с expo:
 
 К сожалению данную библиотеку нельзя использовать с expo, так как она требует написания кода для нативных частей приложения. Поэтому вам необходимо сделать expo-eject, для того чтобы иметь возможность использовать эту и подобные библиотеки. Подробнее про [expo eject](https://docs.expo.dev/expokit/eject/)
 
