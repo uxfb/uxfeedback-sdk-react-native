@@ -85,22 +85,28 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
 
     @ReactMethod
     fun startCampaign(eventName: String) {
-        UXFeedback.getInstance()?.setCampaignEventsListener(this)
-        UXFeedback.getInstance()?.startCampaign(eventName)
+        reactContext.runOnUiQueueThread {
+            UXFeedback.getInstance()?.setCampaignEventsListener(this)
+            UXFeedback.getInstance()?.startCampaign(eventName)
+        }
     }
 
     @ReactMethod
     fun stopCampaign() {
-        UXFeedback.getInstance()?.stopCampaign()
+        reactContext.runOnUiQueueThread {
+            UXFeedback.getInstance()?.stopCampaign()
+        }
     }
 
     @ReactMethod
     fun setProperties(properties: ReadableMap) {
-        UXFeedback.getInstance()?.setProperties(UXFbProperties.getEmpty().apply {
-            properties.entryIterator.forEach {
-                this.add(it.key, it.value.toString())
-            }
-        })
+        reactContext.runOnUiQueueThread {
+            UXFeedback.getInstance()?.setProperties(UXFbProperties.getEmpty().apply {
+                properties.entryIterator.forEach {
+                    this.add(it.key, it.value.toString())
+                }
+            })
+        }
     }
 
     @ReactMethod
