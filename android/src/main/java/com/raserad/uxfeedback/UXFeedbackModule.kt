@@ -20,16 +20,6 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
             } catch (e: Exception) {
                 startGlobalDelayTimer
             }
-            reconnectCount = try {
-                settings.getDouble("reconnectCount").toInt()
-            } catch (e: Exception) {
-                reconnectCount
-            }
-            reconnectTimeout = try {
-                settings.getDouble("reconnectTimeout").toInt()
-            } catch (e: Exception) {
-                reconnectTimeout
-            }
             slideInUiBocked = try {
                 settings.getBoolean("uiBlocked")
             } catch (e: Exception) {
@@ -40,30 +30,53 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
             } catch (e: Exception) {
                 debugEnabled
             }
-            val slideInBlackout = settings.getMap("slideInBlackout")
-            if (slideInBlackout != null) {
-                slideInUiBlackoutOpacity = try {
-                    255 / 100 * slideInBlackout.getDouble("opacity").toInt()
+            val androidSettings = settings.getMap("android")
+            if (androidSettings != null) {
+                reconnectCount = try {
+                    androidSettings.getDouble("reconnectCount").toInt()
                 } catch (e: Exception) {
-                    slideInUiBlackoutBlur
+                    reconnectCount
                 }
-                slideInUiBlackoutBlur = try {
-                    25 / 100 * slideInBlackout.getDouble("blur").toInt()
+                reconnectTimeout = try {
+                    androidSettings.getDouble("reconnectTimeout").toInt()
                 } catch (e: Exception) {
-                    slideInUiBlackoutBlur
+                    reconnectTimeout
                 }
-            }
-            val fullscreenBlackout = settings.getMap("fullscreenBlackout")
-            if (fullscreenBlackout != null) {
-                slideInUiBlackoutOpacity = try {
-                    255 / 100 * fullscreenBlackout.getDouble("opacity").toInt()
-                } catch (e: Exception) {
-                    slideInUiBlackoutBlur
+                val slideInBlackout = androidSettings.getMap("slideInBlackout")
+                if (slideInBlackout != null) {
+                    slideInUiBlackoutColor = try {
+                        slideInBlackout.getDouble("color").toInt()
+                    } catch (e: Exception) {
+                        slideInUiBlackoutColor
+                    }
+                    slideInUiBlackoutOpacity = try {
+                        slideInBlackout.getDouble("opacity").toInt()
+                    } catch (e: Exception) {
+                        slideInUiBlackoutBlur
+                    }
+                    slideInUiBlackoutBlur = try {
+                        slideInBlackout.getDouble("blur").toInt()
+                    } catch (e: Exception) {
+                        slideInUiBlackoutBlur
+                    }
                 }
-                slideInUiBlackoutBlur = try {
-                    25 / 100 * fullscreenBlackout.getDouble("blur").toInt()
-                } catch (e: Exception) {
-                    slideInUiBlackoutBlur
+                val popupBlackout = androidSettings.getMap("popupBlackout")
+                if (popupBlackout != null) {
+                    popupUiBlackoutColor = try {
+                        popupBlackout.getDouble("color").toInt()
+                    } catch (e: Exception) {
+                        popupUiBlackoutColor
+                    }
+                    popupUiBlackoutOpacity = try {
+                        popupBlackout.getDouble("opacity").toInt()
+                    } catch (e: Exception) {
+                        popupUiBlackoutOpacity
+                    }
+                    popupUiBlackoutBlur = try {
+                        popupBlackout.getDouble("blur").toInt()
+                    } catch (e: Exception) {
+                        popupUiBlackoutBlur
+                    }
                 }
             }
         }
@@ -84,11 +97,14 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
     @ReactMethod
     fun setProperties(properties: ReadableMap) {
         UXFeedback.getInstance()?.setProperties(UXFbProperties.getEmpty().apply {
-            properties.entryIterator.forEach { 
+            properties.entryIterator.forEach {
                 this.add(it.key, it.value.toString())
             }
         })
     }
+
+    @ReactMethod
+    fun setThemeIOS() {}
 
     override fun getConstants(): MutableMap<String, Any> {
         return hashMapOf("count" to 1)
