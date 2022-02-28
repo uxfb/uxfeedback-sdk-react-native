@@ -191,14 +191,19 @@ stopCampaign()
 При необходимости есть возможность отслеживать события как показ кампании пользователю или когда кампания пройдена/скрыта:
 ```javascript
 import { onCampaignStart, onCampaignStop } from 'react-native-ux-feedback'
-//unsubscribeOnStart - функция которую можно вызвать для отписки от события
-const unsubscribeOnStart = onCampaignStart((eventName) => {
+const onStartSubscription = onCampaignStart((eventName) => {
     console.log(`Кампания с событием ${eventName} показана`)
 })
-//unsubscribeOnStop - функция которую можно вызвать для отписки от события
-const unsubscribeOnStop = onCampaignStop((eventName) => {
+const onStopSubscription = onCampaignStop((eventName) => {
     console.log(`Кампания с событием ${eventName} скрыта`)
 })
+```
+
+onStartSubscription и onStopSubscription являются экземплярами класса EmitterSubscription и могут быть удалены вызовом метода remove
+```javascript
+//Удаление слушателей событий
+onStartSubscription.remove()
+onStopSubscription.remove()
 ```
 
 ### 8. Отправление параметров (Properties)

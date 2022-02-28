@@ -114,6 +114,12 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
     @ReactMethod
     fun setThemeIOS() {}
 
+    @ReactMethod
+    fun addListener(eventName: String) {}
+
+    @ReactMethod
+    fun removeListeners(count: Integer) {}
+
     override fun getConstants(): MutableMap<String, Any> {
         return hashMapOf("count" to 1)
     }

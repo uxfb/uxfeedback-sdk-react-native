@@ -1,4 +1,4 @@
-import { NativeEventEmitter, NativeModules } from 'react-native'
+import { EmitterSubscription, NativeEventEmitter, NativeModules } from 'react-native'
 
 interface UXFeedbackColorForAndroid {
   color?: number;
@@ -66,22 +66,16 @@ const { UXFeedbackModule } = NativeModules;
 
 const eventEmiter = new NativeEventEmitter(UXFeedbackModule);
 
-export function onCampaignStart(callback: (_: string) => void): Function {
-  const subscription = eventEmiter.addListener('campaign_start', (data: string) => {
+export function onCampaignStart(callback: (_: string) => void): EmitterSubscription {
+  return eventEmiter.addListener('campaign_start', (data: string) => {
     callback(data)
   })
-  return () => {
-    eventEmiter.removeSubscription(subscription)
-  }
 }
 
-export function onCampaignStop(callback: (_: string) => void): Function {
-  const subscription = eventEmiter.addListener('campaign_start', (data: string) => {
+export function onCampaignStop(callback: (_: string) => void): EmitterSubscription {
+  return eventEmiter.addListener('campaign_stop', (data: string) => {
     callback(data)
   })
-  return () => {
-    eventEmiter.removeSubscription(subscription)
-  }
 }
 
 export const {
