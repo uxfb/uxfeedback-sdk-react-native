@@ -8,6 +8,27 @@ class UXFeedbackModule: RCTEventEmitter {
     return ["count": "Rasul's native module"]
   }
 
+  @objc(setup:withResolver:withRejecter:)
+  func setup(config: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    let appID = config["appID"] as? Dictionary<String, String>
+    if (appID == nil) {
+      return
+    }
+    let iosAppID = appID!["ios"]
+    if (iosAppID == nil) {
+      return
+    }
+    DispatchQueue.main.async {
+        UXFeedback.sharedSDK.setup(appID: iosAppID!, window: UIApplication.shared.windows.first!) { [weak self] success in
+          let settings = config["settings"] as? Dictionary<String, Any>
+          if (settings != nil) {
+            self?.setSettings(settings: settings!)
+          }
+          resolve(String(success))
+        }
+    }
+  }
+
   @objc(setSettings:)
   func setSettings(settings: Dictionary<String, Any>) {
     DispatchQueue.main.async {

@@ -54,7 +54,16 @@ interface UXFeedbackSettings {
   }
 }
 
+interface UXFeedbackConfig {
+  appID?: {
+    ios?: string | undefined;
+    android?: string | undefined;
+  } | undefined,
+  settings?: UXFeedbackSettings | undefined;
+}
+
 type UXFeedback = {
+  setup(config: UXFeedbackConfig): Promise<String>;
   setSettings(settings: UXFeedbackSettings): void;
   setThemeIOS(theme: UxFeedbackIOSTheme): void;
   startCampaign(eventName: string): Promise<boolean>;
@@ -79,6 +88,7 @@ export function onCampaignStop(callback: (_: string) => void): EmitterSubscripti
 }
 
 export const {
+  setup,
   setSettings,
   startCampaign,
   stopCampaign,

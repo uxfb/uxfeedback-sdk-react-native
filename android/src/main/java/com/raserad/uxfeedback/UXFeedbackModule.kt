@@ -13,6 +13,23 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
     override fun getName() = "UXFeedbackModule"
 
     @ReactMethod
+    fun setup(config: ReadableMap, promise: Promise) {
+        reactContext.runOnUiQueueThread {
+            val appID = config.getMap("appID") ?: return@runOnUiQueueThread
+            val androidAppID = try {
+                appID.getString("android")!!
+            } catch (e: Exception) {
+                return@runOnUiQueueThread
+            }
+            UXFeedback.init(currentActivity!!.application, androidAppID)
+            val settings = config.getMap("settings")
+            if (settings !== null) {
+                setSettings(settings)
+            }
+        }
+    }
+
+    @ReactMethod
     fun setSettings(settings: ReadableMap) {
         reactContext.runOnUiQueueThread {
             val feedbackSettings = UXFbSettings.getDefault().apply {
