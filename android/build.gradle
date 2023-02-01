@@ -34,11 +34,10 @@ android {
 repositories {
     google()
     mavenCentral()
-    maven { url "https://mymavenrepo.com/repo/u4asKGGjymjlKwPIWU0v/" }
 }
 
 dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'
-    implementation 'ru.uxfeedback:sdk:1.2.0'
+    implementation 'ru.uxfeedback:sdk:1.4.0'
 }

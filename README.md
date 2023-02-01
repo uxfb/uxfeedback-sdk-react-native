@@ -15,11 +15,11 @@ FullScreen - форма появляется по центру экрана
 
 ## Версии
 
-Актуальная версия библиотеки для react-native - `0.0.24`
+Актуальная версия библиотеки для react-native - `0.0.27`
 
-Актуальная версия библиотеки для ios - `1.2.6`
+Актуальная версия библиотеки для ios - `1.4.0`
 
-Актуальная версия библиотеки для android - `1.2.0`
+Актуальная версия библиотеки для android - `1.4.0`
 
 
 ## Что стоит знать:
@@ -54,6 +54,7 @@ yarn add react-native-ux-feedback
 Перейдите в файл `/android/build.gradle` и добавьте репозиторий maven в allprojects:
 
 ```gradle
+// Если не нашли данной секции то создайте ее
 allprojects {
     repositories {
         // Другие репозитории
@@ -67,7 +68,15 @@ allprojects {
 ```gradle
 dependencies {
     //Другие зависимости
-    implementation 'ru.uxfeedback:sdk:1.2.0'
+    implementation 'ru.uxfeedback:sdk:1.4.0'
+}
+```
+
+Так же не забудьте поднять уровень compleSdkVersion до 31 или выше:
+```gradle
+android {
+    compileSdkVersion safeExtGet('compileSdkVersion', 31)
+    //Другие настройки
 }
 ```
 
@@ -81,10 +90,10 @@ import ru.uxfeedback.pub.sdk.UXFeedback;
 Затем проинициализируйте библиотеку в onCreate:
 ```java
 @Override
-    public void onCreate() {
+public void onCreate() {
     super.onCreate();
     //Получить App_ID можно в панели управления UX Feedback
-    UXFeedback.init(this, "App_ID", UXFbSettings.Companion.getDefault());
+    UXFeedback.init(this, "App_ID", UXFbSettings.Companion.getDefault(), null);
 }
 ```
 
@@ -97,22 +106,17 @@ pod install
 ```
 
 Это установит все необходимые зависимости для ios части приложения.
-Далее необходимо перейти в файл `/ios/{projectName}/AppDelegate.m` и установить зависимости в верхней части файла:
 
-```objective-c
-#import <UXFeedbackSDK/UXFeedbackSDK.h>
-```
+Далее добавьте метод setup в index.js файл (находится в корне проекта):
+```javascript
+import { setup } from 'react-native-ux-feedback'
 
-А затем проинициализировать библиотеку:
-
-```objective-c
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-...
 //Получить App_ID можно в панели управления UX Feedback
-[[UXFeedback sharedSDK] setupWithAppID: @"App_ID" window: self.window theme: nil completion: nil];
-return YES;
-}
+setup({
+  appID: {
+    ios: "App_ID",
+  }
+})
 ```
 
 ### 4. Конфигурирование библиотеки
@@ -130,6 +134,7 @@ setSettings({
     reconnectTimeout: 0, //Время перед повторной отправкой данных
     reconnectCount: 10, //Количество попыток повторной отправки данных
     socketTimeout: 100, //Таймаут сетевого соединения 
+    fieldsEnabled: true, //Активация срабатывания события onCampaignEventSend для android 
     slideInBlackout: { //Затемнение фона для форм Slide-in.
         color: 255, //Цвет от 0 до 255
         opacity: 255, //Прозрачность от 0 до 255
@@ -179,13 +184,13 @@ setTheme({
 
 ##### Запуск кампании
 
-В необходимом месте приложения вы можете стартовать кампанию вызвав метод startCampaign:
+В необходимом месте приложения вы можете стартовать кампанию вызвав метод showCampaign:
 
 ```javascript
-import { startCampaign } from 'react-native-ux-feedback'
+import { showCampaign } from 'react-native-ux-feedback'
 
 // Допустимые символы для названия события event_name: “Aa-Zz, 0-9, _”. Рекомендуем не использовать пробелы. 
-startCampaign('event_name')
+showCampaign('event_name')
 ```
 
 ##### Остановка кампании
@@ -200,23 +205,45 @@ stopCampaign()
 ### 7. Отслеживание событий
 При необходимости есть возможность отслеживать события как показ кампании пользователю или когда кампания пройдена/скрыта:
 ```javascript
-import { onCampaignStart, onCampaignStop } from 'react-native-ux-feedback'
-const onStartSubscription = onCampaignStart((eventName) => {
+import { onCampaignShow, onCampaignFinish, onCampaignLoaded, onCampaignEventSend, onCampaignTerminate } from 'react-native-ux-feedback'
+
+//Событие при показе кампании
+const onCompaignShowSubscription = onCampaignShow((eventName) => {
     console.log(`Кампания с событием ${eventName} показана`)
 })
-const onStopSubscription = onCampaignStop((eventName) => {
+
+//Событие при скрытии кампании
+const onCampaignFinishSubscription = onCampaignFinish((eventName) => {
     console.log(`Кампания с событием ${eventName} скрыта`)
+})
+
+//Событие при загрузке кампании (инициализация)
+const onCampaignLoadedSubscription = onCampaignLoaded((success) => {
+    console.log(`Кампания загружена ${success}`)
+})
+
+//Событие при отправке данных (для работы в android не забудьте указать fieldsEnabled: true в настройках)
+const onCampaignEventSendSubscription = onCampaignEventSend(({ campaignId, fieldValues }) => {
+    console.log(`В кампанию с id ${campaignId} отправлены данные ${fieldValues}`)
+})
+
+//Событие при прерывании кампании
+const onCampaignTerminateSubscription = onCampaignTerminate(({ eventName, terminatePage, totalPages }) => {
+    console.log(`Кампания с событием ${eventName} прекращена на странице ${terminatePage}. Всего страниц ${totalPages}`)
 })
 ```
 
-onStartSubscription и onStopSubscription являются экземплярами класса EmitterSubscription и могут быть удалены вызовом метода remove
+onCompaignShowSubscription и другие являются экземплярами класса EmitterSubscription и могут быть удалены вызовом метода remove
 ```javascript
 //Удаление слушателей событий
-onStartSubscription.remove()
-onStopSubscription.remove()
+onCompaignShowSubscription.remove()
+onCampaignFinishSubscription.remove()
+onCampaignLoadedSubscription.remove()
+onCampaignEventSendSubscription.remove()
+onCampaignTerminateSubscription.remove()
 ```
 
-### 8. Отправление параметров (Properties)
+### 8. Отправка параметров (Properties)
 При необходимости есть возможность отправить дополнительные данные, вместе с ответом, например User_id, Email, Регион или любые другие. Для этого вызовите функцию setParameters:
 ```javascript
 import { setParameters } from 'react-native-ux-feedback'
@@ -278,7 +305,7 @@ yarn add
 ```gradle
 dependencies {
     //Другие зависимости
-    implementation 'ru.uxfeedback:sdk:1.2.0'
+    implementation 'ru.uxfeedback:sdk:1.4.0'
 }
 ```
 
@@ -289,4 +316,3 @@ cd ios && pod install --repo-update && cd ..
 ```
 
 4. Готово! Можете продолжать работу с обновленной библиотекой
-

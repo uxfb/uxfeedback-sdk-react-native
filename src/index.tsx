@@ -46,6 +46,7 @@ interface UXFeedbackSettings {
     socketTimeout?: number | undefined;
     slideInBlackout?: UXFeedbackColorForAndroid;
     popupBlackout?: UXFeedbackColorForAndroid;
+    fieldsEnabled?: boolean | undefined;
   },
   ios?: {
     closeOnSwipe?: boolean | undefined;
@@ -62,6 +63,17 @@ interface UXFeedbackConfig {
   settings?: UXFeedbackSettings | undefined;
 }
 
+interface OnCampaignTerminateData {
+  eventName: string;
+  terminatePage: number;
+  totalPages: number;
+}
+
+interface OnCampaignSendData {
+  campaignId: string;
+  fieldValues: Record<string, any>;
+}
+
 type UXFeedback = {
   setup(config: UXFeedbackConfig): Promise<String>;
   setSettings(settings: UXFeedbackSettings): void;
@@ -75,14 +87,32 @@ const { UXFeedbackModule } = NativeModules;
 
 const eventEmiter = new NativeEventEmitter(UXFeedbackModule);
 
-export function onCampaignStart(callback: (_: string) => void): EmitterSubscription {
-  return eventEmiter.addListener('campaign_start', (data: string) => {
+export function onCampaignTerminate(callback: (_: OnCampaignTerminateData) => void): EmitterSubscription {
+  return eventEmiter.addListener('campaign_terminate', (data: OnCampaignTerminateData) => {
     callback(data)
   })
 }
 
-export function onCampaignStop(callback: (_: string) => void): EmitterSubscription {
-  return eventEmiter.addListener('campaign_stop', (data: string) => {
+export function onCampaignEventSend(callback: (_: OnCampaignSendData) => void): EmitterSubscription {
+  return eventEmiter.addListener('campaign_event_send', (data: OnCampaignSendData) => {
+    callback(data)
+  })
+}
+
+export function onCampaignLoaded(callback: (_: boolean) => void): EmitterSubscription {
+  return eventEmiter.addListener('campaign_loaded', (data: boolean) => {
+    callback(data)
+  })
+}
+
+export function onCampaignShow(callback: (_: string) => void): EmitterSubscription {
+  return eventEmiter.addListener('campaign_show', (data: string) => {
+    callback(data)
+  })
+}
+
+export function onCampaignFinish(callback: (_: string) => void): EmitterSubscription {
+  return eventEmiter.addListener('campaign_finish', (data: string) => {
     callback(data)
   })
 }

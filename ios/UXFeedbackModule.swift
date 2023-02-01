@@ -5,7 +5,7 @@ import UXFeedbackSDK
 class UXFeedbackModule: RCTEventEmitter {
   @objc
   override func constantsToExport() -> [AnyHashable : Any]! {
-    return ["count": "Rasul's native module"]
+    return [:]
   }
 
   @objc(setup:withResolver:withRejecter:)
@@ -24,6 +24,7 @@ class UXFeedbackModule: RCTEventEmitter {
           if (settings != nil) {
             self?.setSettings(settings: settings!)
           }
+          UXFeedback.sharedSDK.delegate = self
           resolve(String(success))
         }
     }
@@ -32,38 +33,32 @@ class UXFeedbackModule: RCTEventEmitter {
   @objc(setSettings:)
   func setSettings(settings: Dictionary<String, Any>) {
     DispatchQueue.main.async {
-        let globalDelayTimer = settings["globalDelayTimer"] as? Int
-        if (globalDelayTimer != nil) {
-          UXFeedback.sharedSDK.globalDelayTimer = globalDelayTimer!
+        if let globalDelayTimer = settings["globalDelayTimer"] as? Int {
+            UXFeedback.sharedSDK.globalDelayTimer = globalDelayTimer
         }
-        let uiBlocked = settings["uiBlocked"] as? Bool
-        if (uiBlocked != nil) {
-          UXFeedback.sharedSDK.uiBlocked = uiBlocked!
+        if let uiBlocked = settings["uiBlocked"] as? Bool {
+            UXFeedback.sharedSDK.uiBlocked = uiBlocked
         }
-        let debugEnabled = settings["debugEnabled"] as? Bool
-        if (debugEnabled != nil) {
-          UXFeedback.sharedSDK.setDebugEnabled(debugEnabled!)
+        if let debugEnabled = settings["debugEnabled"] as? Bool {
+            UXFeedback.sharedSDK.setDebugEnabled(debugEnabled)
         }
         guard let iosSettings = settings["ios"] as? Dictionary<String, Any> else {
           return
         }
-        let closeOnSwipe = iosSettings["closeOnSwipe"] as? Bool
-        if (closeOnSwipe != nil) {
-          UXFeedback.sharedSDK.closeOnSwipe = closeOnSwipe!
+        if let closeOnSwipe = iosSettings["closeOnSwipe"] as? Bool {
+            UXFeedback.sharedSDK.closeOnSwipe = closeOnSwipe
         }
-        let slideInBlackout = iosSettings["slideInBlackout"] as? Dictionary<String, Any>
-        if (slideInBlackout != nil) {
-          let color = slideInBlackout!["color"] as? String ?? "FFFFFF"
-          let opacity = slideInBlackout!["opacity"] as? Int ?? 100
-          let blur = slideInBlackout!["color"] as? Int ?? 0
-          UXFeedback.sharedSDK.setSlideinBlackout(color: color, opactity: opacity, blur: blur)
+        if let slideInBlackout = iosSettings["slideInBlackout"] as? Dictionary<String, Any> {
+            let color = slideInBlackout["color"] as? String ?? "FFFFFF"
+            let opacity = slideInBlackout["opacity"] as? Int ?? 100
+            let blur = slideInBlackout["blur"] as? Int ?? 0
+            UXFeedback.sharedSDK.setSlideinBlackout(color: color, opactity: opacity, blur: blur)
         }
-        let fullscreenBlackout = iosSettings["fullscreenBlackout"] as? Dictionary<String, Any>
-        if (fullscreenBlackout != nil) {
-          let color = fullscreenBlackout!["color"] as? String ?? "FFFFFF"
-          let opacity = fullscreenBlackout!["opacity"] as? Int ?? 100
-          let blur = fullscreenBlackout!["color"] as? Int ?? 0
-          UXFeedback.sharedSDK.setFullscreenBlackout(color: color, opactity: opacity, blur: blur)
+        if let fullscreenBlackout = iosSettings["fullscreenBlackout"] as? Dictionary<String, Any> {
+            let color = fullscreenBlackout["color"] as? String ?? "FFFFFF"
+            let opacity = fullscreenBlackout["opacity"] as? Int ?? 100
+            let blur = fullscreenBlackout["blur"] as? Int ?? 0
+            UXFeedback.sharedSDK.setFullscreenBlackout(color: color, opactity: opacity, blur: blur)
         }
     }
   }
@@ -72,89 +67,69 @@ class UXFeedbackModule: RCTEventEmitter {
   func setThemeIOS(theme: Dictionary<String, Any>) {
     DispatchQueue.main.async {
         let customTheme = UXFBTheme()
-        let text03Color = theme["text03Color"] as? String
-        if (text03Color != nil) {
-          customTheme.text03Color = UIColor.init(text03Color!)
+        
+        if let text03Color = theme["text03Color"] as? String {
+            customTheme.text03Color = UIColor.init(text03Color)
         }
-        let inputBorderColor = theme["inputBorderColor"] as? String
-        if (inputBorderColor != nil) {
-          customTheme.inputBorderColor = UIColor.init(inputBorderColor!)
+        if let inputBorderColor = theme["inputBorderColor"] as? String {
+            customTheme.inputBorderColor = UIColor.init(inputBorderColor)
         }
-        let iconColor = theme["iconColor"] as? String
-        if (iconColor != nil) {
-          customTheme.iconColor = UIColor.init(iconColor!)
+        if let iconColor = theme["iconColor"] as? String {
+            customTheme.iconColor = UIColor.init(iconColor)
         }
-        let btnBgColorActive = theme["btnBgColorActive"] as? String
-        if (btnBgColorActive != nil) {
-          customTheme.btnBgColorActive = UIColor.init(btnBgColorActive!)
+        if let btnBgColorActive = theme["btnBgColorActive"] as? String {
+            customTheme.btnBgColorActive = UIColor.init(btnBgColorActive)
         }
-        let btnBorderRadius = theme["btnBorderRadius"] as? Double
-        if (btnBorderRadius != nil) {
-          customTheme.btnBorderRadius = CGFloat(btnBorderRadius!)
+        if let btnBorderRadius = theme["btnBorderRadius"] as? Double {
+            customTheme.btnBorderRadius = CGFloat(btnBorderRadius)
         }
-        let errorColorSecondary = theme["errorColorSecondary"] as? String
-        if (errorColorSecondary != nil) {
-          customTheme.errorColorSecondary = UIColor.init(errorColorSecondary!)
+        if let errorColorSecondary = theme["errorColorSecondary"] as? String {
+            customTheme.errorColorSecondary = UIColor.init(errorColorSecondary)
         }
-        let errorColorPrimary = theme["errorColorPrimary"] as? String
-        if (errorColorPrimary != nil) {
-          customTheme.errorColorPrimary = UIColor.init(errorColorPrimary!)
+        if let errorColorPrimary = theme["errorColorPrimary"] as? String {
+            customTheme.errorColorPrimary = UIColor.init(errorColorPrimary)
         }
-        let mainColor = theme["mainColor"] as? String
-        if (mainColor != nil) {
-          customTheme.mainColor = UIColor.init(mainColor!)
+        if let mainColor = theme["mainColor"] as? String {
+            customTheme.mainColor = UIColor.init(mainColor)
         }
-        let controlBgColorActive = theme["controlBgColorActive"] as? String
-        if (controlBgColorActive != nil) {
-          customTheme.controlBgColorActive = UIColor.init(controlBgColorActive!)
+        if let controlBgColorActive = theme["controlBgColorActive"] as? String {
+            customTheme.controlBgColorActive = UIColor.init(controlBgColorActive)
         }
-        let formBorderRadius = theme["formBorderRadius"] as? Double
-        if (formBorderRadius != nil) {
-          customTheme.formBorderRadius = CGFloat(formBorderRadius!)
+        if let formBorderRadius = theme["formBorderRadius"] as? Double {
+            customTheme.formBorderRadius = CGFloat(formBorderRadius)
         }
-        let inputBgColor = theme["inputBgColor"] as? String
-        if (inputBgColor != nil) {
-          customTheme.inputBgColor = UIColor.init(inputBgColor!)
+        if let inputBgColor = theme["inputBgColor"] as? String {
+            customTheme.inputBgColor = UIColor.init(inputBgColor)
         }
-        let text01Color = theme["text01Color"] as? String
-        if (text01Color != nil) {
-          customTheme.text01Color = UIColor.init(text01Color!)
+        if let text01Color = theme["text01Color"] as? String {
+            customTheme.text01Color = UIColor.init(text01Color)
         }
-        let controlBgColor = theme["controlBgColor"] as? String
-        if (controlBgColor != nil) {
-          customTheme.controlBgColor = UIColor.init(controlBgColor!)
+        if let controlBgColor = theme["controlBgColor"] as? String {
+            customTheme.controlBgColor = UIColor.init(controlBgColor)
         }
-        let controlIconColor = theme["controlIconColor"] as? String
-        if (controlIconColor != nil) {
-          customTheme.controlIconColor = UIColor.init(controlIconColor!)
+        if let controlIconColor = theme["controlIconColor"] as? String {
+            customTheme.controlIconColor = UIColor.init(controlIconColor)
         }
-        let btnBgColor = theme["btnBgColor"] as? String
-        if (btnBgColor != nil) {
-          customTheme.btnBgColor = UIColor.init(btnBgColor!)
+        if let btnBgColor = theme["btnBgColor"] as? String {
+            customTheme.btnBgColor = UIColor.init(btnBgColor)
         }
-        let text02Color = theme["text02Color"] as? String
-        if (text02Color != nil) {
-          customTheme.text02Color = UIColor.init(text02Color!)
+        if let text02Color = theme["text02Color"] as? String {
+            customTheme.text02Color = UIColor.init(text02Color)
         }
-        let btnTextColor = theme["btnTextColor"] as? String
-        if (btnTextColor != nil) {
-          customTheme.btnTextColor = UIColor.init(btnTextColor!)
+        if let btnTextColor = theme["btnTextColor"] as? String {
+            customTheme.btnTextColor = UIColor.init(btnTextColor)
         }
-        let bgColor = theme["bgColor"] as? String
-        if (bgColor != nil) {
-          customTheme.bgColor = UIColor.init(bgColor!)
+        if let bgColor = theme["bgColor"] as? String {
+            customTheme.bgColor = UIColor.init(bgColor)
         }
-        let fontBoldName = theme["fontBoldName"] as? String
-        if (fontBoldName != nil) {
-          customTheme.fontBoldName = fontBoldName!
+        if let fontBoldName = theme["fontBoldName"] as? String {
+            customTheme.fontBoldName = fontBoldName
         }
-        let fontMediumName = theme["fontMediumName"] as? String
-        if (fontMediumName != nil) {
-          customTheme.fontMediumName = fontMediumName!
+        if let fontMediumName = theme["fontMediumName"] as? String {
+            customTheme.fontMediumName = fontMediumName
         }
-        let fontRegularName = theme["fontRegularName"] as? String
-        if (fontRegularName != nil) {
-          customTheme.fontRegularName = fontRegularName!
+        if let fontRegularName = theme["fontRegularName"] as? String {
+            customTheme.fontRegularName = fontRegularName
         }
         UXFeedback.sharedSDK.setTheme(theme: customTheme)
     }
@@ -162,7 +137,6 @@ class UXFeedbackModule: RCTEventEmitter {
 
   @objc(startCampaign:)
   func startCampaign(eventName: String) {
-    UXFeedback.sharedSDK.delegate = self
     DispatchQueue.main.async {
       UXFeedback.sharedSDK.sendEvent(event: eventName, fromController: RCTPresentedViewController()!)
     }
@@ -189,25 +163,39 @@ class UXFeedbackModule: RCTEventEmitter {
     
   @objc
   override func supportedEvents() -> [String]! {
-    return ["campaign_start", "campaign_stop"]
+    return ["campaign_show", "campaign_finish", "campaign_loaded", "campaign_event_send", "campaign_terminate"]
+  }
+    
+  func emitEvent(withName: String, body: Any) {
+    DispatchQueue.main.async {
+        self.sendEvent(withName: withName, body: body)
+    }
   }
 }
 
 extension UXFeedbackModule: UXFeedbackCampaignDelegate {
-  func campaignDidLoad(success: Bool) {}
-  
-  func campaignDidReceiveError(errorString: String) {}
+  func campaignDidTerminate(eventName: String, terminatedPage: Int, totalPages: Int) {
+      emitEvent(withName: "campaign_terminate", body: ["eventName": eventName, "terminatePage": terminatedPage, "totalPages": totalPages])
+  }
+
+  func campaignDidSend(campaignId: String, answers: [String : Any]) {
+      emitEvent(withName: "campaign_event_send", body: ["campaignId": campaignId, "fieldValues": answers])
+  }
+    
+  func campaignDidLoad(success: Bool) {
+      emitEvent(withName: "campaign_loaded", body: success)
+  }
   
   func campaignDidShow(eventName: String) {
-    DispatchQueue.main.async {
-        self.sendEvent(withName: "campaign_start", body: eventName)
-    }
+      emitEvent(withName: "campaign_show", body: eventName)
   }
   
   func campaignDidClose(eventName: String) {
-    DispatchQueue.main.async {
-        self.sendEvent(withName: "campaign_stop", body: eventName)
-    }
+      emitEvent(withName: "campaign_finish", body: eventName)
   }
+    
+  func logDidReceive(message: String) {}
+
+  func campaignDidReceiveError(errorString: String) {}
 }
 

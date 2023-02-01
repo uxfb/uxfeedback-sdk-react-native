@@ -2,13 +2,10 @@ package com.raserad.uxfeedback
 
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import ru.uxfeedback.pub.sdk.UXFbOnStateCampaignListener
-import ru.uxfeedback.pub.sdk.UXFbProperties
-import ru.uxfeedback.pub.sdk.UXFbSettings
-import ru.uxfeedback.pub.sdk.UXFeedback
+import ru.uxfeedback.pub.sdk.*
 import java.lang.Exception
 
-class UXFeedbackModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), UXFbOnStateCampaignListener {
+class UXFeedbackModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), UXFbOnEventsListener {
 
     override fun getName() = "UXFeedbackModule"
 
@@ -21,7 +18,7 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
             } catch (e: Exception) {
                 return@runOnUiQueueThread
             }
-            UXFeedback.init(currentActivity!!.application, androidAppID)
+            UXFeedback.init(currentActivity!!.application, androidAppID, UXFbSettings.Companion.getDefault(), this)
             val settings = config.getMap("settings")
             if (settings !== null) {
                 setSettings(settings)
@@ -38,10 +35,10 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
                 } catch (e: Exception) {
                     startGlobalDelayTimer
                 }
-                slideInUiBocked = try {
+                slideInUiBlocked = try {
                     settings.getBoolean("uiBlocked")
                 } catch (e: Exception) {
-                    slideInUiBocked
+                    slideInUiBlocked
                 }
                 debugEnabled = try {
                     settings.getBoolean("debugEnabled")
@@ -59,6 +56,11 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
                         androidSettings.getDouble("reconnectTimeout").toInt()
                     } catch (e: Exception) {
                         reconnectTimeout
+                    }
+                    fieldsEventEnabled = try {
+                        androidSettings.getBoolean("fieldsEnabled")
+                    } catch (e: Exception) {
+                        fieldsEventEnabled
                     }
                     val slideInBlackout = androidSettings.getMap("slideInBlackout")
                     if (slideInBlackout != null) {
@@ -104,8 +106,8 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
 
     @ReactMethod
     fun startCampaign(eventName: String) {
+        UXFeedback.getInstance()?.setUxFbEventsListener(this)
         reactContext.runOnUiQueueThread {
-            UXFeedback.getInstance()?.setCampaignEventsListener(this)
             UXFeedback.getInstance()?.startCampaign(eventName)
         }
     }
@@ -135,7 +137,7 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
     fun addListener(eventName: String) {}
 
     @ReactMethod
-    fun removeListeners(count: Integer) {}
+    fun removeListeners(count: Int) {}
 
     override fun getConstants(): MutableMap<String, Any> {
         return hashMapOf("count" to 1)
@@ -147,11 +149,36 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
         }
     }
 
-    override fun uxFbOnStartCampaign(eventName: String) {
-        emitEvent("campaign_start", eventName)
+    override fun uxFbNoCampaignToStart(eventName: String) {}
+
+    override fun uxFbOnFieldsEvent(campaignId: Int, eventName: String, fieldValues: Map<String, Array<String>>) {
+        val params = Arguments.createMap()
+        params.putString("campaignId", campaignId.toString())
+        params.putMap("fieldValues", Arguments.createMap().apply {
+            fieldValues.forEach {
+                this.putString(it.key, it.value.joinToString(","))
+            }
+        })
+        emitEvent("campaign_event_send", params)
     }
 
-    override fun uxFbOnStopCampaign(eventName: String) {
-        emitEvent("campaign_stop", eventName)
+    override fun uxFbOnFinishCampaign(campaignId: Int, eventName: String) {
+        emitEvent("campaign_finish", eventName)
+    }
+
+    override fun uxFbOnReady() {
+        emitEvent("campaign_loaded", true)
+    }
+
+    override fun uxFbOnStartCampaign(campaignId: Int, eventName: String) {
+        emitEvent("campaign_show", eventName)
+    }
+
+    override fun uxFbOnTerminateCampaign(campaignId: Int, eventName: String, terminatedPage: Int, totalPages: Int) {
+        val params = Arguments.createMap()
+        params.putString("eventName", eventName)
+        params.putInt("terminatePage", terminatedPage)
+        params.putInt("totalPages", totalPages)
+        emitEvent("campaign_terminate", params)
     }
 }
