@@ -10,22 +10,12 @@ class UXFeedbackModule: RCTEventEmitter {
 
   @objc(setup:withResolver:withRejecter:)
   func setup(config: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    let appID = config["appID"] as? Dictionary<String, String>
-    if (appID == nil) {
-      return
-    }
-    let iosAppID = appID!["ios"]
-    if (iosAppID == nil) {
-      return
-    }
-    DispatchQueue.main.async {
-        UXFeedback.sharedSDK.setup(appID: iosAppID!, window: UIApplication.shared.windows.first!) { [weak self] success in
-          let settings = config["settings"] as? Dictionary<String, Any>
-          if (settings != nil) {
-            self?.setSettings(settings: settings!)
-          }
-          UXFeedback.sharedSDK.delegate = self
-          resolve(String(success))
+    if let appID = config["appID"] as? String {
+        DispatchQueue.main.async {
+            UXFeedback.sharedSDK.setup(appID: appID, window: UIApplication.shared.windows.first!) { [weak self] success in
+                UXFeedback.sharedSDK.delegate = self
+                resolve(String(success))
+            }
         }
     }
   }
@@ -174,12 +164,12 @@ class UXFeedbackModule: RCTEventEmitter {
 }
 
 extension UXFeedbackModule: UXFeedbackCampaignDelegate {
+  func campaignDidAnswered(campaignId: String, answers: [String : Any]) {
+      emitEvent(withName: "campaign_event_send", body: ["campaignId": campaignId, "fieldValues": answers])
+  }
+    
   func campaignDidTerminate(eventName: String, terminatedPage: Int, totalPages: Int) {
       emitEvent(withName: "campaign_terminate", body: ["eventName": eventName, "terminatePage": terminatedPage, "totalPages": totalPages])
-  }
-
-  func campaignDidSend(campaignId: String, answers: [String : Any]) {
-      emitEvent(withName: "campaign_event_send", body: ["campaignId": campaignId, "fieldValues": answers])
   }
     
   func campaignDidLoad(success: Bool) {
@@ -193,6 +183,10 @@ extension UXFeedbackModule: UXFeedbackCampaignDelegate {
   func campaignDidClose(eventName: String) {
       emitEvent(withName: "campaign_finish", body: eventName)
   }
+    
+  func campaignDidSend(campaignId: String) {}
+
+  func campaignDidSend(campaignId: String, answers: [String : Any]) {}
     
   func logDidReceive(message: String) {}
 

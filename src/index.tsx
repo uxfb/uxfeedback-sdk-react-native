@@ -55,12 +55,8 @@ interface UXFeedbackSettings {
   }
 }
 
-interface UXFeedbackConfig {
-  appID?: {
-    ios?: string | undefined;
-    android?: string | undefined;
-  } | undefined,
-  settings?: UXFeedbackSettings | undefined;
+interface UXFeedbackSetupConfig {
+  appID?: string | undefined
 }
 
 interface OnCampaignTerminateData {
@@ -75,7 +71,7 @@ interface OnCampaignSendData {
 }
 
 type UXFeedback = {
-  setup(config: UXFeedbackConfig): Promise<String>;
+  setup(config: UXFeedbackSetupConfig): Promise<String>;
   setSettings(settings: UXFeedbackSettings): void;
   setThemeIOS(theme: UxFeedbackIOSTheme): void;
   startCampaign(eventName: string): Promise<boolean>;

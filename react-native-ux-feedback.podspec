@@ -16,5 +16,5 @@ Pod::Spec.new do |s|
   s.source_files  = "ios/**/*.{h,m,swift}"
 
   s.dependency 'React'
-  s.dependency 'UXFeedbackSDK', '~> 1.4.0'
+  s.dependency 'UXFeedbackSDK', '~> 1.6.0'
 end

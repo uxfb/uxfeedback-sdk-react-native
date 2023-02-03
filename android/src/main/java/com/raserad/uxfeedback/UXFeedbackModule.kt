@@ -11,19 +11,7 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
 
     @ReactMethod
     fun setup(config: ReadableMap, promise: Promise) {
-        reactContext.runOnUiQueueThread {
-            val appID = config.getMap("appID") ?: return@runOnUiQueueThread
-            val androidAppID = try {
-                appID.getString("android")!!
-            } catch (e: Exception) {
-                return@runOnUiQueueThread
-            }
-            UXFeedback.init(currentActivity!!.application, androidAppID, UXFbSettings.Companion.getDefault(), this)
-            val settings = config.getMap("settings")
-            if (settings !== null) {
-                setSettings(settings)
-            }
-        }
+        UXFeedback.getInstance()?.setUxFbEventsListener(this)
     }
 
     @ReactMethod
@@ -106,7 +94,6 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
 
     @ReactMethod
     fun startCampaign(eventName: String) {
-        UXFeedback.getInstance()?.setUxFbEventsListener(this)
         reactContext.runOnUiQueueThread {
             UXFeedback.getInstance()?.startCampaign(eventName)
         }
