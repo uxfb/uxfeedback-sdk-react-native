@@ -1,4 +1,4 @@
-import { EmitterSubscription, EventEmitter, EventSubscription, NativeEventEmitter, NativeModules } from 'react-native'
+import { EmitterSubscription, NativeEventEmitter, NativeModules } from 'react-native'
 
 interface UXFeedbackColorForAndroid {
   color?: number;
@@ -83,16 +83,15 @@ const { UXFeedbackModule } = NativeModules;
 
 const eventEmiter = new NativeEventEmitter(UXFeedbackModule);
 
-const eventListenerPlugs: Record<string, EventSubscription> = {
-  capmaign_terminate: eventEmiter.addListener('campaign_terminate', () => {}),
-  campaign_event_send: eventEmiter.addListener('campaign_event_send', () => {}),
-  campaign_loaded: eventEmiter.addListener('campaign_loaded', () => {}),
-  campaign_show: eventEmiter.addListener('campaign_show', () => {}),
-  campaign_finish: eventEmiter.addListener('campaign_finish', () => {}),
-};
+function initListenerPlugs() {
+  eventEmiter.addListener('campaign_terminate', () => {});
+  eventEmiter.addListener('campaign_event_send', () => {});
+  eventEmiter.addListener('campaign_loaded', () => {});
+  eventEmiter.addListener('campaign_show', () => {});
+  eventEmiter.addListener('campaign_finish', () => {});
+}
 
 function addEventListener(event: string, callback: (data: any) => void): EmitterSubscription {
-  eventListenerPlugs[event]?.remove()
   return eventEmiter.addListener(event, callback);
 }
 
@@ -125,6 +124,8 @@ export function onCampaignFinish(callback: (_: string) => void): EmitterSubscrip
     callback(data);
   });
 }
+
+initListenerPlugs();
 
 export const {
   setup,
