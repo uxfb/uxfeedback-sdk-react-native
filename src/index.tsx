@@ -83,35 +83,49 @@ const { UXFeedbackModule } = NativeModules;
 
 const eventEmiter = new NativeEventEmitter(UXFeedbackModule);
 
+function setupListenerStubs() {
+  eventEmiter.addListener('campaign_terminate', () => {});
+  eventEmiter.addListener('campaign_event_send', () => {});
+  eventEmiter.addListener('campaign_loaded', () => {});
+  eventEmiter.addListener('campaign_show', () => {});
+  eventEmiter.addListener('campaign_finish', () => {});
+}
+
+function addEventListener(event: string, callback: (data: any) => void): EmitterSubscription {
+  return eventEmiter.addListener(event, callback);
+}
+
 export function onCampaignTerminate(callback: (_: OnCampaignTerminateData) => void): EmitterSubscription {
-  return eventEmiter.addListener('campaign_terminate', (data: OnCampaignTerminateData) => {
-    callback(data)
-  })
+  return addEventListener('campaign_terminate', (data: OnCampaignTerminateData) => {
+    callback(data);
+  });
 }
 
 export function onCampaignEventSend(callback: (_: OnCampaignSendData) => void): EmitterSubscription {
-  return eventEmiter.addListener('campaign_event_send', (data: OnCampaignSendData) => {
-    callback(data)
-  })
+  return addEventListener('campaign_event_send', (data: OnCampaignSendData) => {
+    callback(data);
+  });
 }
 
 export function onCampaignLoaded(callback: (_: boolean) => void): EmitterSubscription {
-  return eventEmiter.addListener('campaign_loaded', (data: boolean) => {
-    callback(data)
-  })
+  return addEventListener('campaign_loaded', (data: boolean) => {
+    callback(data);
+  });
 }
 
 export function onCampaignShow(callback: (_: string) => void): EmitterSubscription {
-  return eventEmiter.addListener('campaign_show', (data: string) => {
-    callback(data)
-  })
+  return addEventListener('campaign_show', (data: string) => {
+    callback(data);
+  });
 }
 
 export function onCampaignFinish(callback: (_: string) => void): EmitterSubscription {
-  return eventEmiter.addListener('campaign_finish', (data: string) => {
-    callback(data)
-  })
+  return addEventListener('campaign_finish', (data: string) => {
+    callback(data);
+  });
 }
+
+setupListenerStubs();
 
 export const {
   setup,

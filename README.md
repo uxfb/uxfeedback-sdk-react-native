@@ -15,7 +15,7 @@ FullScreen - форма появляется по центру экрана
 
 ## Версии
 
-Актуальная версия библиотеки для react-native - `0.0.29`
+Актуальная версия библиотеки для react-native - `1.0.4`
 
 Актуальная версия библиотеки для ios - `1.6.0`
 
@@ -37,21 +37,35 @@ FullScreen - форма появляется по центру экрана
 
 Установка React Native UX Feedback требует несколько шагов: установить NPM модуль, настройка библиотеки для каждой платформы и пересобрать ваше приложение.
 
-### 1. Установка через NPM
+### 1. Использование с expo:
 
-Установите React Native UX Feedback модуль в корень вашего React Native проекта с помощью NPM или Yarn:
+К сожалению данную библиотеку нельзя использовать с expo, так как она требует написания кода для нативных частей приложения. Поэтому, перед установкой, вам необходимо сделать expo prebuild, для того чтобы иметь возможность использовать эту и подобные ей нативные библиотеки. Подробнее про [expo prebuild](https://docs.expo.dev/workflow/prebuild/)
+
+### 2. Установка через NPM
+
+Установите React Native UX Feedback модуль с помощью NPM или Yarn:
 
 ```bash
 # Используя npm
-npm install --save react-native-ux-feedback
+npm install --save uxfeedback
 
 # Используя Yarn
-yarn add react-native-ux-feedback
+yarn add uxfeedback
 ```
 
-### 2. Настройка Android части
+### 3. Настройка Android части
 
-Перейдите в файл `/android/build.gradle` и добавьте репозиторий maven в allprojects:
+Перейдите в файл `/android/build.gradle`. Проследите чтобы версия gradle была обновлена до последней (например 7.0.4)
+```gradle
+buildscript {
+    dependencies {
+        classpath('com.android.tools.build:gradle:7.0.4')
+        // Другие classpath
+    }
+}
+```
+
+Так же добавьте репозиторий maven в секции allprojects:
 
 ```gradle
 // Если не нашли данной секции то добавьте ее
@@ -97,7 +111,7 @@ public void onCreate() {
 }
 ```
 
-### 3. Настройка iOS части
+### 4. Настройка iOS части
 
 Перейдите в терминале в папку ios в вашем проекте и введите команду:
 
@@ -114,22 +128,22 @@ pod install
 ```
 Это необходимая мера для предотвращения падений приложения, когда пользователь хочет выбрать скриншоты из галереи.
 
-### 4. Запуск библиотеки
+### 5. Запуск библиотеки
 
 Добавьте метод setup в index.js файл (находится в корне проекта):
 ```javascript
-import { setup } from 'react-native-ux-feedback'
+import { setup } from 'uxfeedback'
 
 //Получить App_ID можно в панели управления UX Feedback
 setup({ appID: "App_ID" })
 ```
 
-### 5. Конфигурирование библиотеки
+### 6. Конфигурирование библиотеки
 
-Для того чтобы задавать нужные параметры работы библиотеки используйте метод `setSettings` импортируемый из react-native-ux-feedback:
+Для того чтобы задавать нужные параметры работы библиотеки используйте метод `setSettings` импортируемый из uxfeedback:
 
 ```javascript
-import { setSettings } from 'react-native-ux-feedback'
+import { setSettings } from 'uxfeedback'
 
 setSettings({
   globalDelayTimer: 0, // Время показа между кампаниями
@@ -167,12 +181,12 @@ setSettings({
 })
 ```
 
-### 6. Дизайн форм
+### 7. Дизайн форм
 
-Для IOS можно использовать метод setThemeIOS из react-native-ux-feedback:
+Для IOS можно использовать метод setThemeIOS из uxfeedback:
 
 ```javascript
-import { setThemeIOS } from 'react-native-ux-feedback'
+import { setThemeIOS } from 'uxfeedback'
 
 setTheme({
     text03Color: "#999999",
@@ -186,32 +200,32 @@ setTheme({
 **Параметры цветов необходимо взять из файла, который сформируют дизайнеры по ссылке:** [Гайды по стилям](https://www.figma.com/file/zZKRpSS1zKfgr9fGkZizAv/UXFB-FORMS-TEMPLATE?node-id=0%3A1 )
 
 
-### 7. Запуск форм (Events)
+### 8. Запуск форм (Events)
 
 ##### Запуск кампании
 
-В необходимом месте приложения вы можете стартовать кампанию вызвав метод showCampaign:
+В необходимом месте приложения вы можете стартовать кампанию вызвав метод startCampaign:
 
 ```javascript
-import { showCampaign } from 'react-native-ux-feedback'
+import { startCampaign } from 'uxfeedback'
 
 // Допустимые символы для названия события event_name: “Aa-Zz, 0-9, _”. Рекомендуем не использовать пробелы. 
-showCampaign('event_name')
+startCampaign('event_name')
 ```
 
 ##### Остановка кампании
 
 В необходимом месте приложения вы можете остановить кампанию вызвав метод stopCampaign:
 ```javascript
-import { stopCampaign } from 'react-native-ux-feedback'
+import { stopCampaign } from 'uxfeedback'
 stopCampaign()
 ```
 Если кампания не была показана - ее показ отменится, если была показана - будет закрыта.
 
-### 8. Отслеживание событий
+### 9. Отслеживание событий
 При необходимости есть возможность отслеживать события как показ кампании пользователю или когда кампания пройдена/скрыта:
 ```javascript
-import { onCampaignShow, onCampaignFinish, onCampaignLoaded, onCampaignEventSend, onCampaignTerminate } from 'react-native-ux-feedback'
+import { onCampaignShow, onCampaignFinish, onCampaignLoaded, onCampaignEventSend, onCampaignTerminate } from 'uxfeedback'
 
 //Событие при показе кампании
 const onCompaignShowSubscription = onCampaignShow((eventName) => {
@@ -249,22 +263,22 @@ onCampaignEventSendSubscription.remove()
 onCampaignTerminateSubscription.remove()
 ```
 
-### 9. Отправка параметров (Properties)
+### 10. Отправка параметров (Properties)
 При необходимости есть возможность отправить дополнительные данные, вместе с ответом, например User_id, Email, Регион или любые другие. Для этого вызовите функцию setParameters:
 ```javascript
-import { setParameters } from 'react-native-ux-feedback'
+import { setParameters } from 'uxfeedback'
 setParameters({
     name: "User",
     age: 21,
     //....
 })
 ```
-### 10. Режим логгирования (Отладка приложения)
+### 11. Режим логгирования (Отладка приложения)
 
 Для того чтобы включить режим логгирования вам нужно указать в настройке библиотеки debugEnabled: true
 
 ```javascript
-import { setSettings } from 'react-native-ux-feedback'
+import { setSettings } from 'uxfeedback'
 
 setSettings({
   debugEnabled: true,
@@ -280,10 +294,6 @@ npx react-native log-android
 
 Более подробную информацию можно получить [здесь](https://reactnative.dev/docs/debugging)
 
-### 11. Использование с expo:
-
-К сожалению данную библиотеку нельзя использовать с expo, так как она требует написания кода для нативных частей приложения. Поэтому вам необходимо сделать expo-eject, для того чтобы иметь возможность использовать эту и подобные библиотеки. Подробнее про [expo eject](https://docs.expo.dev/expokit/eject/)
-
 ## Обновление библиотеки:
 
 Чтобы обновить версию библиотеки для react-native и нативных частей приложения необходимо проделать ряд шагов:
@@ -292,7 +302,7 @@ npx react-native log-android
 ```package.json
 "dependencies": {
     // Другие библиотеки
-    "react-native-ux-feedback": "^0.0.28"
+    "uxfeedback": "^1.0.4"
 }
 ```
 
