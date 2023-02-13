@@ -15,7 +15,7 @@ FullScreen - форма появляется по центру экрана
 
 ## Версии
 
-Актуальная версия библиотеки для react-native - `1.0.1`
+Актуальная версия библиотеки для react-native - `1.0.4`
 
 Актуальная версия библиотеки для ios - `1.6.0`
 
@@ -204,13 +204,13 @@ setTheme({
 
 ##### Запуск кампании
 
-В необходимом месте приложения вы можете стартовать кампанию вызвав метод showCampaign:
+В необходимом месте приложения вы можете стартовать кампанию вызвав метод startCampaign:
 
 ```javascript
-import { showCampaign } from 'uxfeedback'
+import { startCampaign } from 'uxfeedback'
 
 // Допустимые символы для названия события event_name: “Aa-Zz, 0-9, _”. Рекомендуем не использовать пробелы. 
-showCampaign('event_name')
+startCampaign('event_name')
 ```
 
 ##### Остановка кампании
@@ -302,7 +302,7 @@ npx react-native log-android
 ```package.json
 "dependencies": {
     // Другие библиотеки
-    "uxfeedback": "^1.0.1"
+    "uxfeedback": "^1.0.4"
 }
 ```
 

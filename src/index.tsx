@@ -83,7 +83,7 @@ const { UXFeedbackModule } = NativeModules;
 
 const eventEmiter = new NativeEventEmitter(UXFeedbackModule);
 
-function initListenerPlugs() {
+function setupListenerStubs() {
   eventEmiter.addListener('campaign_terminate', () => {});
   eventEmiter.addListener('campaign_event_send', () => {});
   eventEmiter.addListener('campaign_loaded', () => {});
@@ -125,7 +125,7 @@ export function onCampaignFinish(callback: (_: string) => void): EmitterSubscrip
   });
 }
 
-initListenerPlugs();
+setupListenerStubs();
 
 export const {
   setup,
