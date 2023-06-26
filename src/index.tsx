@@ -131,6 +131,7 @@ export const {
   setup,
   setSettings,
   startCampaign,
+  setThemeIOS,
   stopCampaign,
   setProperties
 } = UXFeedbackModule as UXFeedback;

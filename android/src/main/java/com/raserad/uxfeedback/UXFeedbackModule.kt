@@ -118,7 +118,7 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
     }
 
     @ReactMethod
-    fun setThemeIOS() {}
+    fun setThemeIOS(theme: ReadableMap) {}
 
     @ReactMethod
     fun addListener(eventName: String) {}
