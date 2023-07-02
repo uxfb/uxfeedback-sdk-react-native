@@ -39,5 +39,5 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'
-    implementation 'ru.uxfeedback:sdk:1.4.0'
+    implementation 'ru.uxfeedback:sdk:1.4.+'
 }
