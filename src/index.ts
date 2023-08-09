@@ -1,18 +1,19 @@
 import { EmitterSubscription, NativeEventEmitter, NativeModules } from 'react-native'
 
-interface UXFeedbackColorForAndroid {
-  color?: number;
-  opacity?: number;
-  blur?: number;
-}
-
-interface UXFeedbackColorForIOS {
+export interface UXFeedbackColor {
   color?: string;
   opacity?: number;
   blur?: number;
 }
 
-interface UxFeedbackIOSTheme {
+export interface UXFeedbackFont {
+  family?: string;
+  weight?: number;
+  size?: number;
+  italic?: boolean;
+}
+
+export interface UxFeedbackTheme {
   text03Color?: string;
   inputBorderColor?: string;
   iconColor?: string;
@@ -34,49 +35,55 @@ interface UxFeedbackIOSTheme {
   fontBoldName?: string;
   fontMediumName?: string;
   fontRegularName?: string;
+  lightNavigationBar?: boolean;
+  fontH1?: UXFeedbackFont;
+  fontH2?: UXFeedbackFont;
+  fontP1?: UXFeedbackFont;
+  fontP2?: UXFeedbackFont;
+  fontBtn?: UXFeedbackFont;
 }
 
-interface UXFeedbackSettings {
+export interface UXFeedbackSettings {
+  endpointURL?: string | undefined;
   globalDelayTimer?: number | undefined;
-  uiBlocked?: boolean | undefined;
+  slideInUiBlocked?: boolean | undefined;
   debugEnabled?: boolean | undefined;
-  android?: {
-    reconnectTimeout?: number | undefined;
-    reconnectCount?: number | undefined;
-    socketTimeout?: number | undefined;
-    slideInBlackout?: UXFeedbackColorForAndroid;
-    popupBlackout?: UXFeedbackColorForAndroid;
-    fieldsEnabled?: boolean | undefined;
-  },
+  fieldsEventEnabled?: boolean | undefined;
+  slideInUiBlackout?: UXFeedbackColor;
+  popupUiBlackout?: UXFeedbackColor;
+  retryTimeout?: number | undefined;
+  retryCount?: number | undefined;
+  socketTimeout?: number | undefined;
   ios?: {
     closeOnSwipe?: boolean | undefined;
-    slideInBlackout?: UXFeedbackColorForIOS;
-    fullscreenBlackout?: UXFeedbackColorForIOS;
   }
 }
 
-interface UXFeedbackSetupConfig {
-  appID?: string | undefined
+export interface UXFeedbackSetupConfig {
+  iosAppID?: string;
+  theme?: UxFeedbackTheme;
+  settings?: UXFeedbackSettings;
+  properties?: Record<string, string>;
 }
 
-interface OnCampaignTerminateData {
+export interface OnCampaignTerminateData {
   eventName: string;
   terminatePage: number;
   totalPages: number;
 }
 
-interface OnCampaignSendData {
+export interface OnCampaignSendData {
   campaignId: string;
   fieldValues: Record<string, any>;
 }
 
 type UXFeedback = {
-  setup(config: UXFeedbackSetupConfig): Promise<String>;
+  setup(config: UXFeedbackSetupConfig): void;
   setSettings(settings: UXFeedbackSettings): void;
-  setThemeIOS(theme: UxFeedbackIOSTheme): void;
+  setTheme(theme: UxFeedbackTheme): void;
   startCampaign(eventName: string): Promise<boolean>;
   stopCampaign(): void;
-  setProperties(properties: Map<string, any>): void;
+  setProperties(properties: Map<string, string>): void;
 }
 
 const { UXFeedbackModule } = NativeModules;
@@ -84,11 +91,18 @@ const { UXFeedbackModule } = NativeModules;
 const eventEmiter = new NativeEventEmitter(UXFeedbackModule);
 
 function setupListenerStubs() {
-  eventEmiter.addListener('campaign_terminate', () => {});
-  eventEmiter.addListener('campaign_event_send', () => {});
-  eventEmiter.addListener('campaign_loaded', () => {});
-  eventEmiter.addListener('campaign_show', () => {});
-  eventEmiter.addListener('campaign_finish', () => {});
+  const stubs = [
+    'campaign_terminate',
+    'campaign_event_send',
+    'campaign_loaded',
+    'campaign_not_found',
+    'log',
+    'campaign_show',
+    'campaign_finish',
+  ];
+  stubs.forEach((stub) => {
+    eventEmiter.addListener(stub, () => {});
+  });
 }
 
 function addEventListener(event: string, callback: (data: any) => void): EmitterSubscription {
@@ -103,6 +117,12 @@ export function onCampaignTerminate(callback: (_: OnCampaignTerminateData) => vo
 
 export function onCampaignEventSend(callback: (_: OnCampaignSendData) => void): EmitterSubscription {
   return addEventListener('campaign_event_send', (data: OnCampaignSendData) => {
+    callback(data);
+  });
+}
+
+export function onCampaignNotFound(callback: (_: string) => void): EmitterSubscription {
+  return addEventListener('campaign_not_found', (data: string) => {
     callback(data);
   });
 }
@@ -125,13 +145,19 @@ export function onCampaignFinish(callback: (_: string) => void): EmitterSubscrip
   });
 }
 
+export function onLog(callback: (_: string) => void): EmitterSubscription {
+  return addEventListener('log', (data: string) => {
+    callback(data);
+  });
+}
+
 setupListenerStubs();
 
 export const {
   setup,
   setSettings,
   startCampaign,
-  setThemeIOS,
+  setTheme,
   stopCampaign,
   setProperties
 } = UXFeedbackModule as UXFeedback;

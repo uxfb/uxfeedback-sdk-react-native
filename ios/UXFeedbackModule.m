@@ -9,7 +9,7 @@ RCT_EXTERN_METHOD(setup:(NSDictionary)config
 
 RCT_EXTERN_METHOD(setSettings:(NSDictionary)settings)
 
-RCT_EXTERN_METHOD(setThemeIOS:(NSDictionary)theme)
+RCT_EXTERN_METHOD(setTheme:(NSDictionary)theme)
 
 RCT_EXTERN_METHOD(startCampaign:(NSString)eventName)
 

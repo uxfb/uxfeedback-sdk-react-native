@@ -14,22 +14,25 @@ FullScreen - форма появляется по центру экрана
 
 ## Оглавление
 
-[Сhangelog](#changelog)
-[Версии](#версии)
-[Что стоит знать](#что-стоит-знать)
-[Установка](#установка)
-[1. Использование с expo:](#1-использование-с-expo)
-[2. Установка через NPM](#2-установка-через-npm)
-[3. Настройка Android части](#3-настройка-android-части)
-[4. Настройка iOS части](#4-настройка-ios-части)
-[5. Запуск библиотеки](#5-запуск-библиотеки)
-[6. Конфигурирование библиотеки](#6-конфигурирование-библиотеки)
-[7. Дизайн форм](#7-дизайн-форм)
-[8. Запуск форм (Events)](#8-запуск-форм-events)
-[9. Отслеживание событий](#9-отслеживание-событий)
-[10. Отправка параметров (Properties)](#10-отправка-параметров-properties)
-[11. Режим логгирования (Отладка приложения)](#11-режим-логгирования-отладка-приложения)
-[12. Обновление библиотеки](#12-обновление-библиотеки)
+| Оглавление |
+| ------------- |
+| [Сhangelog](#changelog) |
+| [Версии](#версии) |
+| [Что стоит знать](#что-стоит-знать) |
+| [Установка](#установка) |
+| [1. Использование с expo:](#1-использование-с-expo) |
+| [2. Установка через NPM](#2-установка-через-npm) |
+| [3. Настройка Android части](#3-настройка-android-части) |
+| [4. Настройка iOS части](#4-настройка-ios-части) |
+| [5. Запуск библиотеки](#5-запуск-библиотеки) |
+| [6. Конфигурирование библиотеки](#6-конфигурирование-библиотеки) |
+| [7. Дизайн форм](#7-дизайн-форм) |
+| [8. Запуск форм (Events)](#8-запуск-форм-events) |
+| [9. Отслеживание событий](#9-отслеживание-событий) |
+| [10. Отправка параметров (Properties)](#10-отправка-параметров-properties) |
+| [11. Режим логгирования (Отладка приложения)](#11-режим-логгирования-отладка-приложения) |
+| [12. Запуск библиотеки с предварительно заданными настройками, темой и параметрами](#12-запуск-библиотеки-с-предварительно-заданными-настройками-темой-и-параметрами) |
+| [13. Обновление библиотеки](#13-обновление-библиотеки) |
 
 ## Changelog
 
@@ -37,15 +40,16 @@ FullScreen - форма появляется по центру экрана
 | ------------- | ------------- | ------------- |
 | 1.0.7  | 02.2023  | Исходная версия |
 | 1.0.8  | 26.06.2023  | Актуализированы версии нативных библиотек IOS и Android  |
+| 2.0.1  | 10.08.2023  | Переход на версию 2.0. Обновлены и унифицированны методы для ios и android.  |
 
 
 ## Версии
 
-Актуальная версия библиотеки для react-native - `1.0.8`
+Актуальная версия библиотеки для react-native - `2.0.1`
 
-Актуальная версия библиотеки для ios - `1.6.4`
+Актуальная версия библиотеки для ios - `2.0.0`
 
-Актуальная версия библиотеки для android - `1.4.8`
+Актуальная версия библиотеки для android - `2.1.0`
 
 
 ## Что стоит знать:
@@ -81,50 +85,10 @@ yarn add uxfeedback
 
 ### 3. Настройка Android части
 
-Перейдите в файл `/android/build.gradle`. Проследите чтобы версия gradle была обновлена до последней (например 7.0.4)
-```gradle
-buildscript {
-    dependencies {
-        classpath('com.android.tools.build:gradle:7.0.4')
-        // Другие classpath
-    }
-}
-```
-
-Так же добавьте репозиторий maven в секции allprojects:
-
-```gradle
-// Если не нашли данной секции то добавьте ее
-allprojects {
-    repositories {
-        // Другие репозитории
-        maven { url "https://mymavenrepo.com/repo/u4asKGGjymjlKwPIWU0v/" }
-    }
-}
-```
-
-Далее перейдите в файл `/android/app/build.gradle` и добавьте зависимость UXFeedback в depencies:
-
-```gradle
-dependencies {
-    //Другие зависимости
-    implementation 'ru.uxfeedback:sdk:1.4.+'
-}
-```
-
-Так же не забудьте поднять уровень compleSdkVersion до 31 или выше:
-```gradle
-android {
-    compileSdkVersion safeExtGet('compileSdkVersion', 31)
-    //Другие настройки
-}
-```
-
-Теперь перейдите в `android/src/.../MainApplication.java` и установите зависимости в верхней части файла:
+Перейдите в `android/src/.../MainApplication.java` и установите зависимости в верхней части файла:
 
 ```java
-import ru.uxfeedback.pub.sdk.UXFbSettings;
-import ru.uxfeedback.pub.sdk.UXFeedback;
+import com.raserad.uxfeedback.UXFeedback;
 ```
 
 Затем проинициализируйте библиотеку в onCreate:
@@ -133,7 +97,7 @@ import ru.uxfeedback.pub.sdk.UXFeedback;
 public void onCreate() {
     super.onCreate();
     //Получить App_ID можно в панели управления UX Feedback
-    UXFeedback.init(this, "App_ID", UXFbSettings.Companion.getDefault(), null);
+    UXFeedback.setup(this, "App_ID");
 }
 ```
 
@@ -154,7 +118,7 @@ pod install
 ```
 Это необходимая мера для предотвращения падений приложения, когда пользователь хочет выбрать скриншоты из галереи.
 
-Для IOS App ID можно указать в методе setup, предоставленном ниже в [пункте 5](#5-запуск-библиотеки).
+Для IOS App ID нужно указать в методе setup, предоставленном ниже в [пункте 5](#5-запуск-библиотеки).
 
 ### 5. Запуск библиотеки
 
@@ -163,7 +127,7 @@ pod install
 import { setup } from 'uxfeedback'
 
 //Получить App_ID можно в панели управления UX Feedback
-setup({ appID: "App_ID" })
+setup({ iosAppID: "App_ID" })
 ```
 
 ### 6. Конфигурирование библиотеки
@@ -174,56 +138,89 @@ setup({ appID: "App_ID" })
 import { setSettings } from 'uxfeedback'
 
 setSettings({
-  globalDelayTimer: 0, // Время показа между кампаниями
-  uiBlocked: true, // Блокировка прочего ui пока показывается модальное окно фидбека
-  debugEnabled: true, //Включение режима логирования (про логирование поговорим ниже)
-  android: { //Настройки библиотеки для android
-    reconnectTimeout: 0, //Время перед повторной отправкой данных
-    reconnectCount: 10, //Количество попыток повторной отправки данных
-    socketTimeout: 100, //Таймаут сетевого соединения 
-    fieldsEnabled: true, //Активация срабатывания события onCampaignEventSend для android 
-    slideInBlackout: { //Затемнение фона для форм Slide-in.
-        color: 255, //Цвет от 0 до 255
-        opacity: 255, //Прозрачность от 0 до 255
-        blur: 25, //Размытие от 0 до 25
+    debugEnabled: 0, //Включение режима логирования (про логирование поговорим ниже)
+    fieldsEventEnabled: true,//Активация срабатывания события onCampaignEventSend 
+    globalDelayTimer: 0, // Время показа между кампаниями
+    retryTimeout: 1000, //Время перед повторной отправкой данных
+    retryCount: 10, //Количество попыток повторной отправки данных
+    socketTimeout: 1000, //Таймаут сетевого соединения 
+    slideInUiBlocked: false, // Блокировка прочего ui пока показывается модальное окно фидбека
+    slideInUiBlackout: { //Затемнение фона для форм Slide-in.
+        color: "#000000", //Цвет в формате hex
+        blur: 50, //Прозрачность от 0 до 100
+        opacity: 50, //Размытие от 0 до 100
     },
-    popupBlackout:  { //Затемнение фона для форм Fullscreen.
-        color: 255, //Цвет от 0 до 255
-        opacity: 255, //Прозрачность от 0 до 255
-        blur: 25, //Размытие от 0 до 25
+    popupUiBlackout: {
+        color: "#000000", //Цвет в формате hex
+        blur: 50, //Прозрачность от 0 до 100
+        opacity: 50, //Размытие от 0 до 100
     },
-  },
-  ios: { //Настройки библиотеки для ios 
-    closeOnSwipe: true, // включение полного закрытия slide-in формы одним смахиванием вниз
-    slideInBlackout:  { //Затемнение фона для форм Slide-in.
-        color: "#ffffff", //Цвет в формате hex
-        opacity: 80, //Прозрачность от 0 до 100
-        blur: 25, //Размытие от 0 до 100
-    },
-    fullscreenBlackout:  { //Затемнение фона для форм Fullscreen.
-        color: "#ffffff", //Цвет в формате hex
-        opacity: 80, //Прозрачность от 0 до 100
-        blur: 25, //Размытие от 0 до 100
-    },
+    ios: { //Настройки библиотеки для ios 
+        closeOnSwipe: true, // включение полного закрытия slide-in формы одним смахиванием вниз
+    }
   },
 })
 ```
 
 ### 7. Дизайн форм
 
-Для IOS можно использовать метод setThemeIOS из uxfeedback:
+Чтобы задать стили дизайна можно использовать метод setTheme:
 
 ```javascript
-import { setThemeIOS } from 'uxfeedback'
+import { setTheme } from 'uxfeedback'
 
 setTheme({
-    text03Color: "#999999",
-    inputBorderColor: "#eeeeee"
-    //... Остальные стили можно посмотреть в гайдах по стилям
+    bgColor: '#FFFFFF', //Цвет фона формы
+    iconColor: '#B5B8C2', //Цвет иконки "Закрыть форму", чекбоксов, радиокнопок в нормальном состоянии
+    text01Color: '#232735', //Цвет заголовков блока header и заголовков всех блоков ввода информации (comment, textarea, email)
+    text02Color: '#505565', //Цвет блока text
+    text03Color: '#8B90A0', //Цвет текста счетчика страниц, плейсхолдера, инпутов (comment textarea, comment input, email)
+    mainColor: '#0076C2', //Цвет курсора в интупе и внутренней обводки инпута в фокусе (comment textarea, comment input, email)
+    errorColorPrimary: '#E84047', //Цвет звезды в заголовках обязательных вопросов и сообщений о незаполненных обязательных полях
+    errorColorSecondary: '#7FE84047', //Цвет внутренней обводки у невыбранного смайла (rating smile), звезд, чекбоксов и радиокнопок
+    btnBgColor: '#0076C2', //Фон кнопки (button)
+    btnBgColorActive: '#1983C8', //Фон кнопки при нажатии (button)
+    btnTextColor: '#FFFFFF', //Цвет текста кнопки (button)
+    inputBgColor: '#F3F3F3', //Фон инпутов (comment textarea, comment input, email)
+    inputBorderColor: '#D3D4D8', //Внутренняя обводка инпутов (comment textarea, comment input, email)
+    controlBgColor: '#F3F3F3', //Фон в (radio button, checkbox)
+    controlBgColorActive: '#DBF1FF', //Фон активных вариантов (radio button, checkbox)
+    controlIconColor: '#FFFFFF', //Цвет центрального элемента в иконке блока (radio button) и галки в иконке блока (checkbox)
+    formBorderRadius: 8, //Закругления верхних углов формы в slidein и закругления всех четырех углов в popup
+    btnBorderRadius: 12, //Закругления кнопки "Продолжить"
+    lightNavigationBar: true, //Стиль NavigationBar/StatusBar
+    fontH1: { //Шрифт заголовка кампании
+        family: 'sans-serif', //Название шрифта
+        size: 24, //Размер
+        italic: false, //Наклоненный или нет
+        weight: 500 //Вес шрифта
+    },
+    fontH2: { //Шрифт заголовка поля (field)
+        family: 'sans-serif',
+        size: 20,
+        italic: false,
+        weight: 500
+    },
+    fontP1: { //Основной шрифт
+        family: 'sans-serif',
+        size: 16,
+        italic: false,
+        weight: 400
+    },
+    fontP2: { //Шрифт подсказок
+        family: 'sans-serif',
+        size: 14,
+        italic: false,
+        weight: 400
+    },
+    fontBtn: { //Шрифт кнопок
+        family: 'sans-serif',
+        size: 14,
+        italic: false,
+        weight: 500
+    }
 })
 ```
-
-Для android необходимо использовать setTheme в нативной части приложения. Для этого перейдите к файлу `/android/src/.../MainApplication.java`
 
 **Параметры цветов необходимо взять из файла, который сформируют дизайнеры по ссылке:** [Гайды по стилям](https://www.figma.com/file/zZKRpSS1zKfgr9fGkZizAv/UXFB-FORMS-TEMPLATE?node-id=0%3A1 )
 
@@ -253,7 +250,7 @@ stopCampaign()
 ### 9. Отслеживание событий
 При необходимости есть возможность отслеживать события как показ кампании пользователю или когда кампания пройдена/скрыта:
 ```javascript
-import { onCampaignShow, onCampaignFinish, onCampaignLoaded, onCampaignEventSend, onCampaignTerminate } from 'uxfeedback'
+import { onCampaignEventSend, onCampaignFinish, onCampaignLoaded, onCampaignNotFound, onCampaignShow, onCampaignTerminate, onLog } from 'uxfeedback'
 
 //Событие при показе кампании
 const onCompaignShowSubscription = onCampaignShow((eventName) => {
@@ -279,6 +276,16 @@ const onCampaignEventSendSubscription = onCampaignEventSend(({ campaignId, field
 const onCampaignTerminateSubscription = onCampaignTerminate(({ eventName, terminatePage, totalPages }) => {
     console.log(`Кампания с событием ${eventName} прекращена на странице ${terminatePage}. Всего страниц ${totalPages}`)
 })
+
+//Событие если запускаемая кампания не найдена
+const onCampaignNotFoundSubscription = onCampaignNotFound((name) => {
+    console.log(`Кампания с именем ${name} не была найдена`)
+})
+
+//Событие логирования библиотеки
+const onLogSubscription = onLog((message) => {
+    console.log(`Новое запись в логах библиотеки: ${message}`)
+})
 ```
 
 onCompaignShowSubscription и другие являются экземплярами класса EmitterSubscription и могут быть удалены вызовом метода remove
@@ -289,6 +296,8 @@ onCampaignFinishSubscription.remove()
 onCampaignLoadedSubscription.remove()
 onCampaignEventSendSubscription.remove()
 onCampaignTerminateSubscription.remove()
+onCampaignNotFoundSubscription.remove()
+onLogSubscription.remove()
 ```
 
 ### 10. Отправка параметров (Properties)
@@ -297,7 +306,7 @@ onCampaignTerminateSubscription.remove()
 import { setParameters } from 'uxfeedback'
 setParameters({
     name: "User",
-    age: 21,
+    age: '21',
     //....
 })
 ```
@@ -314,6 +323,28 @@ setSettings({
 })
 ```
 
+### 12. Запуск библиотеки с предварительно заданными настройками, темой и параметрами
+
+Вы можете запустить библиотеку с заранее заданными настройками, стилями и т.д, не вызывая отдельные методы. Для этого вызовите метод setup передав в него соответствующие данные:
+
+```javascript
+setup({
+    iosAppID: 'App_ID',
+    settings: {
+         debugEnabled: 0,
+        // Настройки библиотеки
+    },
+    theme: {
+        bgColor: '#FFFFFF',
+        // Стили бибилиотеки
+    },
+    properties: {
+        name: "User",
+        // Параметры библиотеки
+    }
+})
+```
+
 Затем для android и ios необходимо установить библиотеки логгирования чтобы видеть нативные логи:
 ```bash
 npx react-native log-ios
@@ -322,7 +353,7 @@ npx react-native log-android
 
 Более подробную информацию можно получить [здесь](https://reactnative.dev/docs/debugging)
 
-## 12. Обновление библиотеки
+## 13. Обновление библиотеки
 
 Чтобы обновить версию библиотеки для react-native и нативных частей приложения необходимо проделать ряд шагов:
 
@@ -330,7 +361,7 @@ npx react-native log-android
 ```package.json
 "dependencies": {
     // Другие библиотеки
-    "uxfeedback": "^1.0.8"
+    "uxfeedback": "^2.0.1"
 }
 ```
 
@@ -342,15 +373,6 @@ npm install
 
 # Используя Yarn
 yarn install
-```
-
-2. Перейдите в `android/app/build.gradle` и измените версию зависимости `ru.uxfeedback:sdk` на актуальную версию библиотеки для android:
-
-```gradle
-dependencies {
-    //Другие зависимости
-    implementation 'ru.uxfeedback:sdk:1.4.+'
-}
 ```
 
 3. Далее введите в терминале следующую команду, чтобы обновить зависимости ios версии:

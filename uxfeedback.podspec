@@ -10,11 +10,11 @@ Pod::Spec.new do |s|
 
   s.authors      = package['author']
   s.homepage     = package['homepage']
-  s.platform     = :ios, "10.0"
+  s.platform     = :ios, "12.0"
 
   s.source       = { :git => "https://github.com/uxfb/uxfeedback-sdk-react-native", :tag => "v#{s.version}" }
   s.source_files  = "ios/**/*.{h,m,swift}"
 
   s.dependency 'React'
-  s.dependency 'UXFeedbackSDK', '~> 1.6.0'
+  s.dependency 'UXFBSDK', '~> 2.0.0'
 end

@@ -10,7 +10,7 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.4'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.8.0')}"
     }
 }
 
@@ -36,8 +36,14 @@ repositories {
     mavenCentral()
 }
 
+rootProject.allprojects {
+    repositories {
+        maven { url "https://mymavenrepo.com/repo/gh9JJ4CGNZawn7xYpeUD/" }
+    }
+}
+
 dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'
-    implementation 'ru.uxfeedback:sdk:1.4.+'
+    implementation 'ru.uxfeedback:sdk:2.1.+'
 }

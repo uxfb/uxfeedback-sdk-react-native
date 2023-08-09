@@ -10,139 +10,166 @@ class UXFeedbackModule: RCTEventEmitter {
 
   @objc(setup:withResolver:withRejecter:)
   func setup(config: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    if let appID = config["appID"] as? String {
-        DispatchQueue.main.async {
-            UXFeedback.sharedSDK.setup(appID: appID, window: UIApplication.shared.windows.first!) { [weak self] success in
-                UXFeedback.sharedSDK.delegate = self
-                resolve(String(success))
-            }
-        }
-    }
+      DispatchQueue.main.async {
+          if let appID = config["iosAppID"] as? String {
+              UXFeedback.setup(appID: appID, settings: UXFBSettings(), campaignDelegate: self, logDelegate: self)
+          }
+          if let settings = config["settings"] as? Dictionary<String, Any> {
+              self.setSettings(settings: settings)
+          }
+          if let theme = config["theme"] as? Dictionary<String, Any> {
+              self.setTheme(theme: theme)
+          }
+          if let properties = config["properties"] as? Dictionary<String, Any> {
+              self.setProperties(properties: properties)
+          }
+      }
   }
 
   @objc(setSettings:)
   func setSettings(settings: Dictionary<String, Any>) {
     DispatchQueue.main.async {
-        if let globalDelayTimer = settings["globalDelayTimer"] as? Int {
-            UXFeedback.sharedSDK.globalDelayTimer = globalDelayTimer
+        let sdkSettings = UXFeedback.sdk.settings
+        if let endpointURL = settings["endpointURL"] as? String {
+            sdkSettings.endpoint = endpointURL
         }
-        if let uiBlocked = settings["uiBlocked"] as? Bool {
-            UXFeedback.sharedSDK.uiBlocked = uiBlocked
+        if let globalDelayTimer = settings["globalDelayTimer"] as? Int {
+            sdkSettings.globalDelayTimer = globalDelayTimer
+        }
+        if let slideInUiBlocked = settings["slideInUiBlocked"] as? Bool {
+            sdkSettings.slideInUiBlocked = slideInUiBlocked
         }
         if let debugEnabled = settings["debugEnabled"] as? Bool {
-            UXFeedback.sharedSDK.setDebugEnabled(debugEnabled)
+            sdkSettings.debugEnabled = debugEnabled
+        }
+        if let fieldsEventEnabled = settings["fieldsEventEnabled"] as? Bool {
+            sdkSettings.fieldsEventEnabled = fieldsEventEnabled
+        }
+        if let retryTimout = settings["retryTimout"] as? Double {
+            sdkSettings.retryTimeout = retryTimout
+        }
+        if let retryCount = settings["retryCount"] as? Int {
+            sdkSettings.retryCount = retryCount
+        }
+        if let socketTimeout = settings["socketTimeout"] as? Double {
+            sdkSettings.socketTimeout = socketTimeout
+        }
+        if let slideInUiBlackout = settings["slideInUiBlackout"] as? Dictionary<String, Any> {
+            sdkSettings.slideInUiBlackoutColor = slideInUiBlackout["color"] as? String ?? sdkSettings.slideInUiBlackoutColor
+            sdkSettings.slideInUiBlackoutBlur = slideInUiBlackout["blur"] as? Int ?? sdkSettings.slideInUiBlackoutBlur
+            sdkSettings.slideInUiBlackoutOpacity = slideInUiBlackout["opacity"] as? Int ?? sdkSettings.slideInUiBlackoutOpacity
+        }
+        if let popupUiBlackout = settings["popupUiBlackout"] as? Dictionary<String, Any> {
+            sdkSettings.popupUiBlackoutColor = popupUiBlackout["color"] as? String ?? sdkSettings.popupUiBlackoutColor
+            sdkSettings.popupUiBlackoutBlur = popupUiBlackout["blur"] as? Int ?? sdkSettings.popupUiBlackoutBlur
+            sdkSettings.popupUiBlackoutOpacity = popupUiBlackout["opacity"] as? Int ?? sdkSettings.popupUiBlackoutOpacity
         }
         guard let iosSettings = settings["ios"] as? Dictionary<String, Any> else {
           return
         }
         if let closeOnSwipe = iosSettings["closeOnSwipe"] as? Bool {
-            UXFeedback.sharedSDK.closeOnSwipe = closeOnSwipe
-        }
-        if let slideInBlackout = iosSettings["slideInBlackout"] as? Dictionary<String, Any> {
-            let color = slideInBlackout["color"] as? String ?? "FFFFFF"
-            let opacity = slideInBlackout["opacity"] as? Int ?? 100
-            let blur = slideInBlackout["blur"] as? Int ?? 0
-            UXFeedback.sharedSDK.setSlideinBlackout(color: color, opactity: opacity, blur: blur)
-        }
-        if let fullscreenBlackout = iosSettings["fullscreenBlackout"] as? Dictionary<String, Any> {
-            let color = fullscreenBlackout["color"] as? String ?? "FFFFFF"
-            let opacity = fullscreenBlackout["opacity"] as? Int ?? 100
-            let blur = fullscreenBlackout["blur"] as? Int ?? 0
-            UXFeedback.sharedSDK.setFullscreenBlackout(color: color, opactity: opacity, blur: blur)
+            sdkSettings.closeOnSwipe = closeOnSwipe
         }
     }
   }
     
-  @objc(setThemeIOS:)
-  func setThemeIOS(theme: Dictionary<String, Any>) {
+  @objc(setTheme:)
+  func setTheme(theme: Dictionary<String, Any>) {
     DispatchQueue.main.async {
-        let customTheme = UXFBTheme()
+        let sdkTheme = UXFeedback.sdk.theme
         
         if let text03Color = theme["text03Color"] as? String {
-            customTheme.text03Color = UIColor.init(text03Color)
+            sdkTheme.text03Color = UIColor.init(text03Color)
         }
         if let inputBorderColor = theme["inputBorderColor"] as? String {
-            customTheme.inputBorderColor = UIColor.init(inputBorderColor)
+            sdkTheme.inputBorderColor = UIColor.init(inputBorderColor)
         }
         if let iconColor = theme["iconColor"] as? String {
-            customTheme.iconColor = UIColor.init(iconColor)
+            sdkTheme.iconColor = UIColor.init(iconColor)
         }
         if let btnBgColorActive = theme["btnBgColorActive"] as? String {
-            customTheme.btnBgColorActive = UIColor.init(btnBgColorActive)
+            sdkTheme.btnBgColorActive = UIColor.init(btnBgColorActive)
         }
         if let btnBorderRadius = theme["btnBorderRadius"] as? Double {
-            customTheme.btnBorderRadius = CGFloat(btnBorderRadius)
+            sdkTheme.btnBorderRadius = CGFloat(btnBorderRadius)
         }
         if let errorColorSecondary = theme["errorColorSecondary"] as? String {
-            customTheme.errorColorSecondary = UIColor.init(errorColorSecondary)
+            sdkTheme.errorColorSecondary = UIColor.init(errorColorSecondary)
         }
         if let errorColorPrimary = theme["errorColorPrimary"] as? String {
-            customTheme.errorColorPrimary = UIColor.init(errorColorPrimary)
+            sdkTheme.errorColorPrimary = UIColor.init(errorColorPrimary)
         }
         if let mainColor = theme["mainColor"] as? String {
-            customTheme.mainColor = UIColor.init(mainColor)
+            sdkTheme.mainColor = UIColor.init(mainColor)
         }
         if let controlBgColorActive = theme["controlBgColorActive"] as? String {
-            customTheme.controlBgColorActive = UIColor.init(controlBgColorActive)
+            sdkTheme.controlBgColorActive = UIColor.init(controlBgColorActive)
         }
         if let formBorderRadius = theme["formBorderRadius"] as? Double {
-            customTheme.formBorderRadius = CGFloat(formBorderRadius)
+            sdkTheme.formBorderRadius = CGFloat(formBorderRadius)
         }
         if let inputBgColor = theme["inputBgColor"] as? String {
-            customTheme.inputBgColor = UIColor.init(inputBgColor)
+            sdkTheme.inputBgColor = UIColor.init(inputBgColor)
         }
         if let text01Color = theme["text01Color"] as? String {
-            customTheme.text01Color = UIColor.init(text01Color)
+            sdkTheme.text01Color = UIColor.init(text01Color)
         }
         if let controlBgColor = theme["controlBgColor"] as? String {
-            customTheme.controlBgColor = UIColor.init(controlBgColor)
+            sdkTheme.controlBgColor = UIColor.init(controlBgColor)
         }
         if let controlIconColor = theme["controlIconColor"] as? String {
-            customTheme.controlIconColor = UIColor.init(controlIconColor)
+            sdkTheme.controlIconColor = UIColor.init(controlIconColor)
         }
         if let btnBgColor = theme["btnBgColor"] as? String {
-            customTheme.btnBgColor = UIColor.init(btnBgColor)
+            sdkTheme.btnBgColor = UIColor.init(btnBgColor)
         }
         if let text02Color = theme["text02Color"] as? String {
-            customTheme.text02Color = UIColor.init(text02Color)
+            sdkTheme.text02Color = UIColor.init(text02Color)
         }
         if let btnTextColor = theme["btnTextColor"] as? String {
-            customTheme.btnTextColor = UIColor.init(btnTextColor)
+            sdkTheme.btnTextColor = UIColor.init(btnTextColor)
         }
         if let bgColor = theme["bgColor"] as? String {
-            customTheme.bgColor = UIColor.init(bgColor)
+            sdkTheme.bgColor = UIColor.init(bgColor)
         }
-        if let fontBoldName = theme["fontBoldName"] as? String {
-            customTheme.fontBoldName = fontBoldName
+        if let fontH1 = theme["fontH1"] as? Dictionary<String, Any> {
+            sdkTheme.fontH1 = self.getFont(fontH1, sdkTheme.fontH1)
         }
-        if let fontMediumName = theme["fontMediumName"] as? String {
-            customTheme.fontMediumName = fontMediumName
+        if let fontH2 = theme["fontH2"] as? Dictionary<String, Any> {
+            sdkTheme.fontH2 = self.getFont(fontH2, sdkTheme.fontH2)
         }
-        if let fontRegularName = theme["fontRegularName"] as? String {
-            customTheme.fontRegularName = fontRegularName
+        if let fontP1 = theme["fontP1"] as? Dictionary<String, Any> {
+            sdkTheme.fontP1 = self.getFont(fontP1, sdkTheme.fontP1)
         }
-        UXFeedback.sharedSDK.setTheme(theme: customTheme)
+        if let fontP2 = theme["fontP2"] as? Dictionary<String, Any> {
+            sdkTheme.fontP2 = self.getFont(fontP2, sdkTheme.fontP2)
+        }
+        if let fontBtn = theme["fontBtn"] as? Dictionary<String, Any> {
+            sdkTheme.fontBtn = self.getFont(fontBtn, sdkTheme.fontBtn)
+        }
     }
   }
 
   @objc(startCampaign:)
   func startCampaign(eventName: String) {
     DispatchQueue.main.async {
-      UXFeedback.sharedSDK.sendEvent(event: eventName, fromController: RCTPresentedViewController()!)
+        UXFeedback.sdk.startCampaign(eventName: eventName)
     }
   }
 
   @objc(stopCampaign)
   func stopCampaign() {
     DispatchQueue.main.async {
-        UXFeedback.sharedSDK.stopCampaign()
+        UXFeedback.sdk.stopCampaign()
     }
   }
 
   @objc(setProperties:)
   func setProperties(properties: Dictionary<String, Any>) {
     DispatchQueue.main.async {
-        UXFeedback.sharedSDK.setProperties(properties)
+        properties.forEach { (key: String, value: Any) in
+            UXFeedback.sdk.properties[key] = value
+        }
     }
   }
 
@@ -153,7 +180,7 @@ class UXFeedbackModule: RCTEventEmitter {
     
   @objc
   override func supportedEvents() -> [String]! {
-    return ["campaign_show", "campaign_finish", "campaign_loaded", "campaign_event_send", "campaign_terminate"]
+    return ["campaign_show", "campaign_finish", "campaign_loaded", "campaign_event_send", "campaign_terminate", "log", "campaign_not_found"]
   }
     
   func emitEvent(withName: String, body: Any) {
@@ -163,33 +190,73 @@ class UXFeedbackModule: RCTEventEmitter {
   }
 }
 
+extension UXFeedbackModule: UXFeedbackLogDelegate {
+    func logDidReceive(message: String) {
+        emitEvent(withName: "log", body: message)
+    }
+}
+
 extension UXFeedbackModule: UXFeedbackCampaignDelegate {
-  func campaignDidAnswered(campaignId: String, answers: [String : Any]) {
-      emitEvent(withName: "campaign_event_send", body: ["campaignId": campaignId, "fieldValues": answers])
-  }
-    
-  func campaignDidTerminate(eventName: String, terminatedPage: Int, totalPages: Int) {
-      emitEvent(withName: "campaign_terminate", body: ["eventName": eventName, "terminatePage": terminatedPage, "totalPages": totalPages])
-  }
-    
-  func campaignDidLoad(success: Bool) {
-      emitEvent(withName: "campaign_loaded", body: success)
-  }
-  
-  func campaignDidShow(eventName: String) {
-      emitEvent(withName: "campaign_show", body: eventName)
-  }
-  
-  func campaignDidClose(eventName: String) {
-      emitEvent(withName: "campaign_finish", body: eventName)
-  }
-    
-  func campaignDidSend(campaignId: String) {}
+    func campaignDidReceiveError(errorString: String) {
+        emitEvent(withName: "campaign_not_found", body: errorString)
+    }
 
-  func campaignDidSend(campaignId: String, answers: [String : Any]) {}
+    func campaignDidSend(campaignId: String) {}
     
-  func logDidReceive(message: String) {}
+    func campaignDidAnswered(campaignId: String, answers: [String : Any]) {
+        emitEvent(withName: "campaign_event_send", body: ["campaignId": campaignId, "fieldValues": answers] as [String : Any])
+    }
 
-  func campaignDidReceiveError(errorString: String) {}
+    func campaignDidTerminate(eventName: String, terminatedPage: Int, totalPages: Int) {
+        emitEvent(withName: "campaign_terminate", body: ["eventName": eventName, "terminatePage": terminatedPage, "totalPages": totalPages] as [String : Any])
+    }
+
+    func campaignDidLoad(success: Bool) {
+        emitEvent(withName: "campaign_loaded", body: success)
+    }
+
+    func campaignDidShow(eventName: String) {
+        emitEvent(withName: "campaign_show", body: eventName)
+    }
+
+    func campaignDidClose(eventName: String) {
+        emitEvent(withName: "campaign_finish", body: eventName)
+    }
+}
+
+extension UXFeedbackModule {
+    func getFontDescriptor(_ data: Dictionary<String, Any>, _ defaultFont: UIFont) -> UIFontDescriptor {
+        return UIFontDescriptor(fontAttributes:
+            [
+                UIFontDescriptor.AttributeName.family: data["family"] as? String ?? defaultFont.familyName,
+                UIFontDescriptor.AttributeName.traits: [
+                    UIFontDescriptor.TraitKey.weight: self.getFontWeight(weight: data["weight"] as? String ?? ""),
+                    UIFontDescriptor.TraitKey.slant: data["italic"] as? Bool ?? false ? 1.0 : 0.0
+                ] as [UIFontDescriptor.TraitKey : Any]
+            ]
+        )
+    }
+    
+    func getFont(_ data: Dictionary<String, Any>, _ defaultFont: UIFont) -> UIFont {
+        return UIFont(
+            descriptor: self.getFontDescriptor(data, defaultFont),
+            size: CGFloat(data["size"] as? Int ?? Int(defaultFont.pointSize))
+        )
+    }
+    
+    func getFontWeight(weight: String) -> UIFont.Weight {
+        switch (weight) {
+            case "100": return .thin
+            case "200": return .ultraLight
+            case "300": return .light
+            case "400": return .regular
+            case "500": return .medium
+            case "600": return .semibold
+            case "700": return .bold
+            case "800": return .heavy
+            case "900": return .black
+            default: return .regular
+        }
+    }
 }
 
