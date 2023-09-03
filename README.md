@@ -41,11 +41,12 @@ FullScreen - форма появляется по центру экрана
 | 1.0.7  | 02.2023  | Исходная версия |
 | 1.0.8  | 26.06.2023  | Актуализированы версии нативных библиотек IOS и Android  |
 | 2.0.1  | 10.08.2023  | Переход на версию 2.0. Обновлены и унифицированны методы для ios и android.  |
+| 2.0.2  | 04.09.2023  | Мелкие исправления  |
 
 
 ## Версии
 
-Актуальная версия библиотеки для react-native - `2.0.1`
+Актуальная версия библиотеки для react-native - `2.0.2`
 
 Актуальная версия библиотеки для ios - `2.0.0`
 
@@ -138,7 +139,7 @@ setup({ iosAppID: "App_ID" })
 import { setSettings } from 'uxfeedback'
 
 setSettings({
-    debugEnabled: 0, //Включение режима логирования (про логирование поговорим ниже)
+    debugEnabled: true, //Включение режима логирования (про логирование поговорим ниже)
     fieldsEventEnabled: true,//Активация срабатывания события onCampaignEventSend 
     globalDelayTimer: 0, // Время показа между кампаниями
     retryTimeout: 1000, //Время перед повторной отправкой данных
@@ -222,6 +223,8 @@ setTheme({
 })
 ```
 
+Заметьте, что кастомные шрифты подключаются отдельно (например с помощью npx react-native-asset)
+
 **Параметры цветов необходимо взять из файла, который сформируют дизайнеры по ссылке:** [Гайды по стилям](https://www.figma.com/file/zZKRpSS1zKfgr9fGkZizAv/UXFB-FORMS-TEMPLATE?node-id=0%3A1 )
 
 
@@ -301,10 +304,10 @@ onLogSubscription.remove()
 ```
 
 ### 10. Отправка параметров (Properties)
-При необходимости есть возможность отправить дополнительные данные, вместе с ответом, например User_id, Email, Регион или любые другие. Для этого вызовите функцию setParameters:
+При необходимости есть возможность отправить дополнительные данные, вместе с ответом, например User_id, Email, Регион или любые другие. Для этого вызовите функцию setProperties:
 ```javascript
-import { setParameters } from 'uxfeedback'
-setParameters({
+import { setProperties } from 'uxfeedback'
+setProperties({
     name: "User",
     age: '21',
     //....
@@ -331,7 +334,7 @@ setSettings({
 setup({
     iosAppID: 'App_ID',
     settings: {
-         debugEnabled: 0,
+         debugEnabled: true,
         // Настройки библиотеки
     },
     theme: {
@@ -361,7 +364,7 @@ npx react-native log-android
 ```package.json
 "dependencies": {
     // Другие библиотеки
-    "uxfeedback": "^2.0.1"
+    "uxfeedback": "^2.0.2"
 }
 ```
 

@@ -41,11 +41,6 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
     fun setSettings(settings: ReadableMap) {
         reactContext.runOnUiQueueThread {
             UxFeedback.sdk?.settings?.apply {
-                apiUrlDedicated = try {
-                    settings.getString("endpointURL")!!
-                } catch (e: Exception) {
-                    apiUrlDedicated
-                }
                 startGlobalDelayTimer = try {
                     settings.getDouble("globalDelayTimer").toInt()
                 } catch (e: Exception) {
@@ -120,6 +115,9 @@ class UXFeedbackModule(private val reactContext: ReactApplicationContext) : Reac
             }
         }
     }
+
+    @ReactMethod
+    fun changeServer(url: String) {}
 
     @ReactMethod
     fun startCampaign(eventName: String) {

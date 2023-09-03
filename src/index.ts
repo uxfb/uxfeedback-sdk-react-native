@@ -44,7 +44,6 @@ export interface UxFeedbackTheme {
 }
 
 export interface UXFeedbackSettings {
-  endpointURL?: string | undefined;
   globalDelayTimer?: number | undefined;
   slideInUiBlocked?: boolean | undefined;
   debugEnabled?: boolean | undefined;
@@ -84,6 +83,7 @@ type UXFeedback = {
   startCampaign(eventName: string): Promise<boolean>;
   stopCampaign(): void;
   setProperties(properties: Map<string, string>): void;
+  changeServer(url: string): void;
 }
 
 const { UXFeedbackModule } = NativeModules;
@@ -159,5 +159,6 @@ export const {
   startCampaign,
   setTheme,
   stopCampaign,
-  setProperties
+  setProperties,
+  changeServer
 } = UXFeedbackModule as UXFeedback;

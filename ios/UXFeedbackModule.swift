@@ -3,6 +3,10 @@ import UXFeedbackSDK
 
 @objc(UXFeedbackModule)
 class UXFeedbackModule: RCTEventEmitter {
+    
+  var currentAppID = ""
+  var currentSettings = UXFBSettings()
+
   @objc
   override func constantsToExport() -> [AnyHashable : Any]! {
     return [:]
@@ -12,7 +16,8 @@ class UXFeedbackModule: RCTEventEmitter {
   func setup(config: Dictionary<String, Any>, resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
       DispatchQueue.main.async {
           if let appID = config["iosAppID"] as? String {
-              UXFeedback.setup(appID: appID, settings: UXFBSettings(), campaignDelegate: self, logDelegate: self)
+              self.currentAppID = appID
+              UXFeedback.setup(appID: appID, settings: self.currentSettings, campaignDelegate: self, logDelegate: self)
           }
           if let settings = config["settings"] as? Dictionary<String, Any> {
               self.setSettings(settings: settings)
@@ -30,9 +35,6 @@ class UXFeedbackModule: RCTEventEmitter {
   func setSettings(settings: Dictionary<String, Any>) {
     DispatchQueue.main.async {
         let sdkSettings = UXFeedback.sdk.settings
-        if let endpointURL = settings["endpointURL"] as? String {
-            sdkSettings.endpoint = endpointURL
-        }
         if let globalDelayTimer = settings["globalDelayTimer"] as? Int {
             sdkSettings.globalDelayTimer = globalDelayTimer
         }
@@ -149,6 +151,19 @@ class UXFeedbackModule: RCTEventEmitter {
         }
     }
   }
+    
+    @objc(changeServer:)
+    func changeServer(url: String) {
+        DispatchQueue.main.async {
+            let settings = self.currentSettings
+            if (url == "") {
+                settings.endpoint = nil
+            } else {
+                settings.endpoint = url
+            }
+            UXFeedback.setup(appID: self.currentAppID, settings: settings, campaignDelegate: self, logDelegate: self)
+        }
+    }
 
   @objc(startCampaign:)
   func startCampaign(eventName: String) {

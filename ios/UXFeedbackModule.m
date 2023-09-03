@@ -13,6 +13,8 @@ RCT_EXTERN_METHOD(setTheme:(NSDictionary)theme)
 
 RCT_EXTERN_METHOD(startCampaign:(NSString)eventName)
 
+RCT_EXTERN_METHOD(changeServer:(NSString)endpoint)
+
 RCT_EXTERN_METHOD(stopCampaign)
 
 RCT_EXTERN_METHOD(setProperties:(NSDictionary)properties)
