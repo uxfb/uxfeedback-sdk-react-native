@@ -1,6 +1,6 @@
 {
   "name": "uxfeedback",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "UX Feedback library for react native",
   "homepage": "https://github.com/uxfb/uxfeedback-sdk-react-native",
   "main": "lib/index.js",
