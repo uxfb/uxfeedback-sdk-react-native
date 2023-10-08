@@ -55,6 +55,7 @@ export interface UXFeedbackSettings {
   socketTimeout?: number | undefined;
   ios?: {
     closeOnSwipe?: boolean | undefined;
+    rotateToggle?: boolean | undefined;
   }
 }
 

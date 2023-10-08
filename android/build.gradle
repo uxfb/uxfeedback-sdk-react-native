@@ -45,5 +45,5 @@ rootProject.allprojects {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'
-    implementation 'ru.uxfeedback:sdk:2.1.+'
+    implementation 'ru.uxfeedback:sdk:2.2.+'
 }

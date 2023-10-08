@@ -72,6 +72,10 @@ class UXFeedbackModule: RCTEventEmitter {
         if let closeOnSwipe = iosSettings["closeOnSwipe"] as? Bool {
             sdkSettings.closeOnSwipe = closeOnSwipe
         }
+
+        if let rotateToggle = iosSettings["rotateToggle"] as? Bool {
+            sdkSettings.rotateToggle = rotateToggle
+        }
     }
   }
     
