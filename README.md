@@ -1,4 +1,8 @@
-# Ранее сборки React Native UX Feedback размещались в GitHub, но теперь хранятся в закрытом GitLab. Для установки больше не требуется доступ к GitLab — используйте NPM или Yarn: npm install --save uxfeedback или yarn add uxfeedback. Это официально поддерживаемый способ установки.
+# Ранее сборки React Native UX Feedback размещались в GitHub, но теперь хранятся в закрытом GitLab. 
+# Для установки больше не требуется доступ к GitLab — используйте NPM или Yarn: 
+# npm install --save uxfeedback или 
+# yarn add uxfeedback. 
+# Это официально поддерживаемый способ установки.
 
 # React Native UX Feedback
 ## Руководство по настройке и интеграции библиотеки в проект react native
